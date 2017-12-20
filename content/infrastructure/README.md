@@ -90,12 +90,3 @@ Once installed, you can run the notebook `test.ipynb` placed under
 installed. Follow the instructions in the notebook and, if you do not get any
 error, you are good to go.
 
-# Support
-
-If you have any questions or run into problems, you can open a GitHub issue on
-the projec repository:
-
-> [https://github.com/darribas/gds_scipy16](https://github.com/darribas/gds_scipy16)
-
-Alternatively, you can contact [Serge Rey](mailto:sjsrey@gmail.com) or [Dani Arribas-Bel](mailto:D.Arribas-Bel@liv.ac.uk).
-
