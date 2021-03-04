@@ -44,16 +44,16 @@ The workshop depends on the following libraries/versions:
 
 4. Create an environment named `gds-scipy16`:
 
-`> conda create --name gds-scipy16 python=3 pandas numpy matplotlib bokeh seaborn scikit-learn jupyter statsmodels xlrd xlsxwriter`
+`> conda create --name gds python=3 pandas numpy matplotlib bokeh seaborn scikit-learn jupyter statsmodels xlrd xlsxwriter`
 
 5. Install additional dependencies:
 
-`> conda install --name gds-scipy16 geojson geopandas==0.2 mplleaflet==0.0.5 datashader==0.2.0 cartopy==0.14.2 folium==0.2.1`
+`> conda install --name gds geojson geopandas mplleaflet datashader cartopy folium`
 
 6. To activate and launch the notebook:
 
 ```
-> source activate gds-scipy16
+> source activate gds
 
 > jupyter notebook
 ```
@@ -71,14 +71,14 @@ The workshop depends on the following libraries/versions:
 
 `> conda config --add channels conda-forge`
 
-5. Create an environment named `gds-scipy16`:
+5. Create an environment named `gds`:
 
-`> conda create --name gds-scipy16 pandas numpy matplotlib bokeh seaborn statsmodels scikit-learn jupyter xlrd xlsxwriter geopandas==0.2 mplleaflet==0.0.5 datashader==0.2.0 geojson cartopy==0.14.2 folium==0.2.1`
+`> conda create --name gds pandas numpy matplotlib bokeh seaborn statsmodels scikit-learn jupyter xlrd xlsxwriter geopandas mplleaflet datashader geojson cartopy folium`
 
 6. To activate and launch the notebook:
 
 ```
-> activate gds-scipy16
+> activate gds
 
 > jupyter notebook
 ```
