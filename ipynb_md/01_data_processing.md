@@ -87,7 +87,7 @@ csv_path = lps.examples.get_path('usjoin.csv')
 
 
 ```python
-f = lps.lib.io.open(csv_path)
+f = lps.io.open(csv_path)
 f.header[0:10]
 ```
 
@@ -143,7 +143,7 @@ Then, we open the file using the `ps.open` command:
 
 
 ```python
-f = lps.lib.io.open(shp_path)
+f = lps.io.open(shp_path)
 ```
 
 `f` is what we call a "file handle." That means that it only *points* to the data and provides ways to work with it. By itself, it does not read the whole dataset into memory. To see basic information about the file, we can use a few different methods. 
