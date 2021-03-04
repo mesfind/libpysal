@@ -65,7 +65,7 @@ lps.examples.available()
 
 
 ```python
-ps.examples.explain('us_income')
+lps.examples.explain('us_income')
 ```
 
 
