@@ -7,6 +7,7 @@
 ```python
 #by convention, we use these shorter two-letter names
 import pysal as ps
+import libpysal as lps
 import pandas as pd
 import numpy as np
 ```
@@ -25,7 +26,7 @@ PySAL has a command that it uses to get the paths of its example datasets. Let's
 
 
 ```python
-ps.examples.available()
+lps.examples.available()
 ```
 
 
@@ -81,12 +82,12 @@ ps.examples.explain('us_income')
 
 
 ```python
-csv_path = ps.examples.get_path('usjoin.csv')
+csv_path = lps.examples.get_path('usjoin.csv')
 ```
 
 
 ```python
-f = ps.open(csv_path)
+f = lps.lib.io.open(csv_path)
 f.header[0:10]
 ```
 
@@ -142,7 +143,7 @@ Then, we open the file using the `ps.open` command:
 
 
 ```python
-f = ps.open(shp_path)
+f = lps.lib.io.open(shp_path)
 ```
 
 `f` is what we call a "file handle." That means that it only *points* to the data and provides ways to work with it. By itself, it does not read the whole dataset into memory. To see basic information about the file, we can use a few different methods. 
