@@ -6,6 +6,7 @@
 ```python
 #by convention, we use these shorter two-letter names
 import pysal as ps
+import libpysal as lps
 import pandas as pd
 import numpy as np
 ```
@@ -17,14 +18,14 @@ PySAL has two simple ways to read in data. But, first, you need to get the path 
 !pwd # on windows !cd
 ```
 
-    /Users/dani/code/gds_scipy16/content/part1
+    /Users/admin/code/gds/content/part1
 
 
 PySAL has a command that it uses to get the paths of its example datasets. Let's work with a commonly-used dataset first. 
 
 
 ```python
-ps.examples.available()
+lps.examples.available()
 ```
 
 
@@ -63,7 +64,7 @@ ps.examples.available()
 
 
 ```python
-ps.examples.explain('us_income')
+lps.examples.explain('us_income')
 ```
 
 
@@ -80,12 +81,12 @@ ps.examples.explain('us_income')
 
 
 ```python
-csv_path = ps.examples.get_path('usjoin.csv')
+csv_path = lps.examples.get_path('usjoin.csv')
 ```
 
 
 ```python
-f = ps.open(csv_path)
+f = lps.io.open(csv_path)
 f.header[0:10]
 ```
 
@@ -130,18 +131,18 @@ To read in a shapefile, we will need the path to the file.
 
 
 ```python
-shp_path = '../data/texas.shp'
+shp_path = 'data/texas.shp'
 print(shp_path)
 ```
 
-    ../data/texas.shp
+    data/texas.shp
 
 
-Then, we open the file using the `ps.open` command:
+Then, we open the file using the `lps.io.open` command:
 
 
 ```python
-f = ps.open(shp_path)
+f = lps.io.open(shp_path)
 ```
 
 `f` is what we call a "file handle." That means that it only *points* to the data and provides ways to work with it. By itself, it does not read the whole dataset into memory. To see basic information about the file, we can use a few different methods. 
@@ -287,18 +288,18 @@ polygon. #press tab when the cursor is right after the dot
 
 
 ```python
-dbf_path = "../data/texas.dbf"
+dbf_path = "data/texas.dbf"
 print(dbf_path)
 ```
 
-    ../data/texas.dbf
+    data/texas.dbf
 
 
 When you're working with tables of data, like a `csv` or `dbf`, you can extract your data in the following way. Let's open the dbf file we got the path for above.
 
 
 ```python
-f = ps.open(dbf_path)
+f = lps.io.open(dbf_path)
 ```
 
 Just like with the shapefile, we can examine the header of the dbf file.
@@ -483,11 +484,11 @@ These methods work similarly for `.csv` files as well.
 
 ### Using Pandas with PySAL
 
-A new functionality added to PySAL recently allows you to work with shapefile/dbf pairs using Pandas. This *optional* extension is only turned on if you have Pandas installed. The extension is the `ps.pdio` module:
+A new functionality added to PySAL recently allows you to work with shapefile/dbf pairs using Pandas. This *optional* extension is only turned on if you have Pandas installed. The extension is the `lps.io` module:
 
 
 ```python
-ps.pdio
+lps.io
 ```
 
 
@@ -501,8 +502,8 @@ To use it, you can read in shapefile/dbf pairs using the `ps.pdio.read_files` co
 
 
 ```python
-shp_path = ps.examples.get_path('NAT.shp')
-data_table = ps.pdio.read_files(shp_path)
+shp_path = lps.examples.get_path('virginia.shp')
+data_table = lps.io.shp_file(shp_path)
 ```
 
 This reads in *the entire database table* and adds a column to the end, called `geometry`, that stores the geometries read in from the shapefile. 
@@ -511,166 +512,27 @@ Now, you can work with it like a standard pandas dataframe.
 
 
 ```python
-data_table.head()
+data_table.header
 ```
 
 
-
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>NAME</th>
-      <th>STATE_NAME</th>
-      <th>STATE_FIPS</th>
-      <th>CNTY_FIPS</th>
-      <th>FIPS</th>
-      <th>STFIPS</th>
-      <th>COFIPS</th>
-      <th>FIPSNO</th>
-      <th>SOUTH</th>
-      <th>HR60</th>
-      <th>...</th>
-      <th>BLK90</th>
-      <th>GI59</th>
-      <th>GI69</th>
-      <th>GI79</th>
-      <th>GI89</th>
-      <th>FH60</th>
-      <th>FH70</th>
-      <th>FH80</th>
-      <th>FH90</th>
-      <th>geometry</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Lake of the Woods</td>
-      <td>Minnesota</td>
-      <td>27</td>
-      <td>077</td>
-      <td>27077</td>
-      <td>27</td>
-      <td>77</td>
-      <td>27077</td>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>...</td>
-      <td>0.024534</td>
-      <td>0.285235</td>
-      <td>0.372336</td>
-      <td>0.342104</td>
-      <td>0.336455</td>
-      <td>11.279621</td>
-      <td>5.4</td>
-      <td>5.663881</td>
-      <td>9.515860</td>
-      <td>&lt;pysal.cg.shapes.Polygon object at 0x104125ef0&gt;</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Ferry</td>
-      <td>Washington</td>
-      <td>53</td>
-      <td>019</td>
-      <td>53019</td>
-      <td>53</td>
-      <td>19</td>
-      <td>53019</td>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>...</td>
-      <td>0.317712</td>
-      <td>0.256158</td>
-      <td>0.360665</td>
-      <td>0.361928</td>
-      <td>0.360640</td>
-      <td>10.053476</td>
-      <td>2.6</td>
-      <td>10.079576</td>
-      <td>11.397059</td>
-      <td>&lt;pysal.cg.shapes.Polygon object at 0x10d8ba390&gt;</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Stevens</td>
-      <td>Washington</td>
-      <td>53</td>
-      <td>065</td>
-      <td>53065</td>
-      <td>53</td>
-      <td>65</td>
-      <td>53065</td>
-      <td>0</td>
-      <td>1.863863</td>
-      <td>...</td>
-      <td>0.210030</td>
-      <td>0.283999</td>
-      <td>0.394083</td>
-      <td>0.357566</td>
-      <td>0.369942</td>
-      <td>9.258437</td>
-      <td>5.6</td>
-      <td>6.812127</td>
-      <td>10.352015</td>
-      <td>&lt;pysal.cg.shapes.Polygon object at 0x104142400&gt;</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Okanogan</td>
-      <td>Washington</td>
-      <td>53</td>
-      <td>047</td>
-      <td>53047</td>
-      <td>53</td>
-      <td>47</td>
-      <td>53047</td>
-      <td>0</td>
-      <td>2.612330</td>
-      <td>...</td>
-      <td>0.155922</td>
-      <td>0.258540</td>
-      <td>0.371218</td>
-      <td>0.381240</td>
-      <td>0.394519</td>
-      <td>9.039900</td>
-      <td>8.1</td>
-      <td>10.084926</td>
-      <td>12.840340</td>
-      <td>&lt;pysal.cg.shapes.Polygon object at 0x10dadd5c0&gt;</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Pend Oreille</td>
-      <td>Washington</td>
-      <td>53</td>
-      <td>051</td>
-      <td>53051</td>
-      <td>53</td>
-      <td>51</td>
-      <td>53051</td>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>...</td>
-      <td>0.134605</td>
-      <td>0.243263</td>
-      <td>0.365614</td>
-      <td>0.358706</td>
-      <td>0.387848</td>
-      <td>8.243930</td>
-      <td>4.1</td>
-      <td>7.557643</td>
-      <td>10.313002</td>
-      <td>&lt;pysal.cg.shapes.Polygon object at 0x10dadd630&gt;</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 70 columns</p>
-</div>
-
+{'File Code': 9994,
+'Unused0': 0,
+'Unused1': 0,
+'Unused2': 0,
+'Unused3': 0,
+'Unused4': 0,
+'File Length': 35708,
+'Version': 1000,
+'Shape Type': 5,
+'BBOX Xmin': -83.67526245117188,
+'BBOX Ymin': 36.541481018066406,
+'BBOX Xmax': -75.24258422851562,
+'BBOX Ymax': 39.45690155029297,
+'BBOX Zmin': 0.0,
+'BBOX Zmax': 0.0,
+'BBOX Mmin': 0.0,
+'BBOX Mmax': 0.0}
 
 
 The `read_files` function only works on shapefile/dbf pairs. If you need to read in data using CSVs, use pandas directly:
