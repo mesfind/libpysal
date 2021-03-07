@@ -5,31 +5,32 @@ Python 2 and 3 on the following three platforms:
 
 - Linux (Ubuntu-Mate x64)
 - Windows 10 (x64)
-- Mac OS X (10.11.5 x64).
+- Mac OS X (10.15.9 x64).
 
 The workshop depends on the following libraries/versions:
 
-* `numpy>=1.11`
-* `pandas>=0.18.1`
-* `matplotlib>=1.5.1`
+* `numpy>=1.19.5`
+* `pandas>=1.1.5`
+* `matplotlib>=3.3.4`
 * `jupyter>=1.0`
-* `seaborn>=0.7.0`
-* `pip>=8.1.2`
-* `geopandas>=0.2`
-* `pysal>=1.11.1`
-* `cartopy>=0.14.2`
-* `pyproj>=1.9.5`
-* `shapely>=1.5.16`
-* `geopy>=1.10.0`
+* `seaborn>=0.11.1`
+* `pip>=21.0.1`
+* `geopandas>=0.8.2`
+* `pysal>=2.4.0`
+* `libpysal>=4.4.0`
+* `cartopy>=0.18.0`
+* `pyproj>=2.6.1`
+* `shapely>=1.7.1`
+* `geopy>=2.1.0`
 * `scikit-learn>=0.17.1`
-* `bokeh>0.11.1`
+* `bokeh>2.3.0`
 * `mplleaflet>=0.0.5`
-* `datashader>=0.2.0`
-* `geojson>=1.3.2`
-* `folium>=0.2.1`
-* `statsmodels>=0.6.1`
-* `xlrd>=1.0.0`
-* `xlsxwriter>=0.9.2`
+* `datashader>=0.12.0`
+* `geojson>=2.5.0`
+* `folium>=0.12.1`
+* `statsmodels>=0.12.2`
+* `xlrd>=2.0.1`
+* `xlsxwriter>=1.3.7`
 
 ## Linux/Mac OS X
 
@@ -42,7 +43,7 @@ The workshop depends on the following libraries/versions:
 
 `> conda config --add channels conda-forge`
 
-4. Create an environment named `gds-scipy16`:
+4. Create an environment named `gds`:
 
 `> conda create --name gds python=3 pandas numpy matplotlib bokeh seaborn scikit-learn jupyter statsmodels xlrd xlsxwriter`
 
