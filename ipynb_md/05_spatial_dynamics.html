@@ -2,12 +2,12 @@
 <!DOCTYPE HTML>
 <html lang="" >
     <head>
-        <title>Space-time analysis · Geographic Data Science with PySAL and the pydata stack</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Space-time analysis · Geographic Data Science with PySAL and the pydata stack</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.1.1">
+        <meta name="generator" content="GitBook 3.2.3">
         
         
         
@@ -17,7 +17,7 @@
     
             
                 
-                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex/katex.min.css">
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex-dev/katex.min.css">
                 
             
                 
@@ -74,10 +74,6 @@
     <div class="book-summary">
         
             
-<div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
-</div>
-
             
                 <nav role="navigation">
                 
@@ -366,9 +362,6 @@
                     <div class="page-wrapper" tabindex="-1" role="main">
                         <div class="page-inner">
                             
-<div id="book-search-results">
-    <div class="search-noresults">
-    
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="exploratory-spatial-and-temporal-data-analysis-estda">Exploratory Spatial and Temporal Data Analysis (ESTDA)</h1>
@@ -534,10 +527,10 @@ x = np.linspace(minY0, maxY0, <span class="hljs-number">100</span>)
 </code></pre>
 <pre><code>[&lt;matplotlib.lines.Line2D at 0x113d2a748&gt;]
 </code></pre><p><img src="05_spatial_dynamics_files/05_spatial_dynamics_37_1.png" alt="png"></p>
-<pre><code class="lang-python">d2009 = gaussian_kde(Y[:,<span class="hljs-number">-1</span>])
+<pre><code class="lang-python">d2009 = gaussian_kde(Y[:,-<span class="hljs-number">1</span>])
 </code></pre>
-<pre><code class="lang-python">minY0 = Y[:,<span class="hljs-number">-1</span>].min()*<span class="hljs-number">.90</span>
-maxY0 = Y[:,<span class="hljs-number">-1</span>].max()*<span class="hljs-number">1.10</span>
+<pre><code class="lang-python">minY0 = Y[:,-<span class="hljs-number">1</span>].min()*<span class="hljs-number">.90</span>
+maxY0 = Y[:,-<span class="hljs-number">1</span>].max()*<span class="hljs-number">1.10</span>
 x = np.linspace(minY0, maxY0, <span class="hljs-number">100</span>)
 </code></pre>
 <pre><code class="lang-python">plt.plot(x,d2009(x))
@@ -552,7 +545,7 @@ x = np.linspace(minY0, maxY0, <span class="hljs-number">100</span>)
 </code></pre>
 <pre><code class="lang-python">d1929 = gaussian_kde(RY[:,<span class="hljs-number">0</span>])
 </code></pre>
-<pre><code class="lang-python">d2009 = gaussian_kde(RY[:,<span class="hljs-number">-1</span>])
+<pre><code class="lang-python">d2009 = gaussian_kde(RY[:,-<span class="hljs-number">1</span>])
 </code></pre>
 <pre><code class="lang-python">plt.plot(x, d1929(x))
 plt.plot(x, d2009(x))
@@ -566,7 +559,7 @@ plt.legend()
 <pre><code>&lt;matplotlib.legend.Legend at 0x113a4a908&gt;
 </code></pre><p><img src="05_spatial_dynamics_files/05_spatial_dynamics_47_1.png" alt="png"></p>
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns
-<span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(<span class="hljs-number">2010</span><span class="hljs-number">-1929</span>):
+<span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(<span class="hljs-number">2010</span>-<span class="hljs-number">1929</span>):
     sns.kdeplot(RY[:,y])
 <span class="hljs-comment">#sns.kdeplot(data.HR80)</span>
 <span class="hljs-comment">#sns.kdeplot(data.HR70)</span>
@@ -576,7 +569,7 @@ plt.legend()
   y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
 </code></pre><p><img src="05_spatial_dynamics_files/05_spatial_dynamics_48_1.png" alt="png"></p>
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns
-<span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(<span class="hljs-number">2010</span><span class="hljs-number">-1929</span>):
+<span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(<span class="hljs-number">2010</span>-<span class="hljs-number">1929</span>):
     sns.kdeplot(RY[:,y])
 </code></pre>
 <pre><code>/Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
@@ -743,7 +736,7 @@ plt.title(<span class="hljs-string">&apos;Per Capita Income 1929 Quintiles&apos;
 plt.show()
 </code></pre>
 <p><img src="05_spatial_dynamics_files/05_spatial_dynamics_73_0.png" alt="png"></p>
-<pre><code class="lang-python">pci2009 = ps.Quantiles(pci[:,<span class="hljs-number">-1</span>], k=<span class="hljs-number">5</span>)
+<pre><code class="lang-python">pci2009 = ps.Quantiles(pci[:,-<span class="hljs-number">1</span>], k=<span class="hljs-number">5</span>)
 f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">10</span>, <span class="hljs-number">5</span>))
 tx.assign(cl=pci2009.yb+<span class="hljs-number">1</span>).plot(column=<span class="hljs-string">&apos;cl&apos;</span>, categorical=<span class="hljs-keyword">True</span>, \
         k=<span class="hljs-number">5</span>, cmap=<span class="hljs-string">&apos;Greens&apos;</span>, linewidth=<span class="hljs-number">0.1</span>, ax=ax, \
@@ -842,7 +835,7 @@ plt.legend()
 </code></pre>
 <pre><code>&lt;matplotlib.legend.Legend at 0x7f912bf8d438&gt;
 </code></pre><p><img src="05_spatial_dynamics_files/05_spatial_dynamics_96_1.png" alt="png"></p>
-<pre><code class="lang-python">plt.plot(years, res[:,<span class="hljs-number">-1</span>])
+<pre><code class="lang-python">plt.plot(years, res[:,-<span class="hljs-number">1</span>])
 plt.ylim(<span class="hljs-number">0</span>,<span class="hljs-number">7.0</span>)
 plt.title(<span class="hljs-string">&apos;z-values, I&apos;</span>)
 </code></pre>
@@ -998,22 +991,6 @@ P(LAG4)         C0         C1         C2         C3         C4
                                 
                                 </section>
                             
-    </div>
-    <div class="search-results">
-        <div class="has-results">
-            
-            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
-            <ul class="search-results-list"></ul>
-            
-        </div>
-        <div class="no-results">
-            
-            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
-            
-        </div>
-    </div>
-</div>
-
                         </div>
                     </div>
                 
@@ -1037,7 +1014,7 @@ P(LAG4)         C0         C1         C2         C3         C4
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Space-time analysis","level":"1.7.5","depth":2,"next":{"title":"Part II","level":"1.8","depth":1,"path":"content/part2/README.md","ref":"content/part2/README.md","articles":[{"title":"Points","level":"1.8.1","depth":2,"path":"ipynb_md/06_points.md","ref":"ipynb_md/06_points.md","articles":[]},{"title":"Spatial clustering","level":"1.8.2","depth":2,"path":"ipynb_md/07_spatial_clustering.md","ref":"ipynb_md/07_spatial_clustering.md","articles":[]},{"title":"Spatial Regression","level":"1.8.3","depth":2,"path":"ipynb_md/08_spatial_regression.md","ref":"ipynb_md/08_spatial_regression.md","articles":[]}]},"previous":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/05_spatial_dynamics.md","mtime":"2016-07-12T14:39:01.000Z","type":"markdown"},"gitbook":{"version":"3.1.1","time":"2016-07-12T14:45:16.808Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Space-time analysis","level":"1.7.5","depth":2,"next":{"title":"Part II","level":"1.8","depth":1,"path":"content/part2/README.md","ref":"content/part2/README.md","articles":[{"title":"Points","level":"1.8.1","depth":2,"path":"ipynb_md/06_points.md","ref":"ipynb_md/06_points.md","articles":[]},{"title":"Spatial clustering","level":"1.8.2","depth":2,"path":"ipynb_md/07_spatial_clustering.md","ref":"ipynb_md/07_spatial_clustering.md","articles":[]},{"title":"Spatial Regression","level":"1.8.3","depth":2,"path":"ipynb_md/08_spatial_regression.md","ref":"ipynb_md/08_spatial_regression.md","articles":[]}]},"previous":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{"maxIndexSize":1000000},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/05_spatial_dynamics.md","mtime":"2021-03-06T07:26:43.177Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-07T11:42:45.939Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -1047,7 +1024,7 @@ P(LAG4)         C0         C1         C2         C3         C4
     <script src="../gitbook/theme.js"></script>
     
         
-        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        <script src="../gitbook/gitbook-plugin-search/lunr.min.js"></script>
         
     
         
@@ -1067,7 +1044,7 @@ P(LAG4)         C0         C1         C2         C3         C4
         
     
         
-        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../gitbook/gitbook-plugin-fontsettings/buttons.js"></script>
         
     
 

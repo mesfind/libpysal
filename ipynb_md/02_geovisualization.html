@@ -2,12 +2,12 @@
 <!DOCTYPE HTML>
 <html lang="" >
     <head>
-        <title>Geovisualization · Geographic Data Science with PySAL and the pydata stack</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Geovisualization · Geographic Data Science with PySAL and the pydata stack</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.1.1">
+        <meta name="generator" content="GitBook 3.2.3">
         
         
         
@@ -17,7 +17,7 @@
     
             
                 
-                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex/katex.min.css">
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex-dev/katex.min.css">
                 
             
                 
@@ -74,10 +74,6 @@
     <div class="book-summary">
         
             
-<div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
-</div>
-
             
                 <nav role="navigation">
                 
@@ -366,9 +362,6 @@
                     <div class="page-wrapper" tabindex="-1" role="main">
                         <div class="page-inner">
                             
-<div id="book-search-results">
-    <div class="search-noresults">
-    
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="choropleth-mapping">Choropleth Mapping</h1>
@@ -686,7 +679,7 @@ plt.show()
 <span class="hljs-keyword">from</span> pysal.contrib.viz <span class="hljs-keyword">import</span> folium_mapping <span class="hljs-keyword">as</span> fm
 </code></pre>
 <p>First, we need to convert the data into a JSON format. JSON, short for &quot;Javascript Serialized Object Notation,&quot; is a simple and effective way to represent objects in a digital environment. For geographic information, the <a href="https://geojson.org" target="_blank">GeoJSON</a> standard defines how to represent geographic information in JSON format. Python programmers may be more comfortable thinking of JSON data as something akin to a standard Python dictionary. </p>
-<pre><code class="lang-python">filepath = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>[:<span class="hljs-number">-4</span>]
+<pre><code class="lang-python">filepath = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>[:-<span class="hljs-number">4</span>]
 shp = ps.open(filepath + <span class="hljs-string">&apos;.shp&apos;</span>)
 dbf = ps.open(filepath + <span class="hljs-string">&apos;.dbf&apos;</span>)
 </code></pre>
@@ -779,12 +772,12 @@ reader = shpreader.Reader(<span class="hljs-string">&quot;../data/texas.shp&quot
 </code></pre>
 <pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">choropleth</span><span class="hljs-params">(classes, colors, reader, legend=None, title=None, fileName=None, dpi=<span class="hljs-number">600</span>)</span>:</span>
     ax = plt.axes([<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>], projection=ccrs.LambertConformal())
-    ax.set_extent([<span class="hljs-number">-108</span>, <span class="hljs-number">-93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
+    ax.set_extent([-<span class="hljs-number">108</span>, -<span class="hljs-number">93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
     ax.background_patch.set_visible(<span class="hljs-keyword">False</span>)
     ax.outline_patch.set_visible(<span class="hljs-keyword">False</span>)
     <span class="hljs-keyword">if</span> title:
         plt.title(title)
-    ax.set_extent([<span class="hljs-number">-108</span>, <span class="hljs-number">-93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
+    ax.set_extent([-<span class="hljs-number">108</span>, -<span class="hljs-number">93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
     ax.background_patch.set_visible(<span class="hljs-keyword">False</span>)
     ax.outline_patch.set_visible(<span class="hljs-keyword">False</span>)
 
@@ -797,7 +790,7 @@ reader = shpreader.Reader(<span class="hljs-string">&quot;../data/texas.shp&quot
 
     leg = [ mpatches.Rectangle((<span class="hljs-number">0</span>,<span class="hljs-number">0</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>, facecolor=color) <span class="hljs-keyword">for</span> color <span class="hljs-keyword">in</span> colors]
     <span class="hljs-keyword">if</span> legend:
-        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, <span class="hljs-number">-0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
+        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, -<span class="hljs-number">0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
     <span class="hljs-keyword">if</span> fileName:
         plt.savefig(fileName, dpi=dpi)
     plt.show()
@@ -827,12 +820,12 @@ choropleth(classes, c5, reader, legend, title=<span class="hljs-string">&quot;HR
     ax.axison=<span class="hljs-keyword">False</span>
 
     ax = plt.axes([<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>], projection=ccrs.LambertConformal())
-    ax.set_extent([<span class="hljs-number">-108</span>, <span class="hljs-number">-93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
+    ax.set_extent([-<span class="hljs-number">108</span>, -<span class="hljs-number">93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
     ax.background_patch.set_visible(<span class="hljs-keyword">False</span>)
     ax.outline_patch.set_visible(<span class="hljs-keyword">False</span>)
     <span class="hljs-keyword">if</span> title:
         plt.title(title)
-    ax.set_extent([<span class="hljs-number">-108</span>, <span class="hljs-number">-93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
+    ax.set_extent([-<span class="hljs-number">108</span>, -<span class="hljs-number">93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
     ax.background_patch.set_visible(<span class="hljs-keyword">False</span>)
     ax.outline_patch.set_visible(<span class="hljs-keyword">False</span>)
     <span class="hljs-keyword">for</span> i,state <span class="hljs-keyword">in</span> enumerate(reader.geometries()):
@@ -845,7 +838,7 @@ choropleth(classes, c5, reader, legend, title=<span class="hljs-string">&quot;HR
 
     leg = [ mpatches.Rectangle((<span class="hljs-number">0</span>,<span class="hljs-number">0</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>, facecolor=color) <span class="hljs-keyword">for</span> color <span class="hljs-keyword">in</span> colors]
     <span class="hljs-keyword">if</span> legend:
-        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, <span class="hljs-number">-0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
+        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, -<span class="hljs-number">0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
     <span class="hljs-keyword">if</span> fileName:
         plt.savefig(fileName, dpi=dpi)
     <span class="hljs-comment">#ax.set_axis_off()</span>
@@ -867,7 +860,7 @@ choropleth(classes, c5, reader, legend, title=<span class="hljs-string">&quot;HR
 
 
     ax = plt.axes([<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>], projection=ccrs.LambertConformal())
-    ax.set_extent([<span class="hljs-number">-108</span>, <span class="hljs-number">-93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
+    ax.set_extent([-<span class="hljs-number">108</span>, -<span class="hljs-number">93</span>, <span class="hljs-number">38</span>, <span class="hljs-number">24</span>], ccrs.Geodetic())
     ax.background_patch.set_visible(<span class="hljs-keyword">False</span>)
     ax.outline_patch.set_visible(<span class="hljs-keyword">False</span>)
 
@@ -883,7 +876,7 @@ choropleth(classes, c5, reader, legend, title=<span class="hljs-string">&quot;HR
 
     leg = [ mpatches.Rectangle((<span class="hljs-number">0</span>,<span class="hljs-number">0</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>, facecolor=color) <span class="hljs-keyword">for</span> color <span class="hljs-keyword">in</span> colors]
     <span class="hljs-keyword">if</span> legend:
-        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, <span class="hljs-number">-0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
+        plt.legend(leg, legend, loc=<span class="hljs-string">&apos;lower left&apos;</span>, bbox_to_anchor=(<span class="hljs-number">0.025</span>, -<span class="hljs-number">0.1</span>), fancybox=<span class="hljs-keyword">True</span>)
     <span class="hljs-keyword">if</span> fileName:
         plt.savefig(fileName, dpi=dpi)
     plt.show()
@@ -1001,22 +994,6 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
                                 
                                 </section>
                             
-    </div>
-    <div class="search-results">
-        <div class="has-results">
-            
-            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
-            <ul class="search-results-list"></ul>
-            
-        </div>
-        <div class="no-results">
-            
-            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
-            
-        </div>
-    </div>
-</div>
-
                         </div>
                     </div>
                 
@@ -1040,7 +1017,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2016-07-12T14:39:01.000Z","type":"markdown"},"gitbook":{"version":"3.1.1","time":"2016-07-12T14:45:16.808Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{"maxIndexSize":1000000},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-06T07:26:37.342Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-07T11:42:45.939Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -1050,7 +1027,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
     <script src="../gitbook/theme.js"></script>
     
         
-        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        <script src="../gitbook/gitbook-plugin-search/lunr.min.js"></script>
         
     
         
@@ -1070,7 +1047,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
         
     
         
-        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../gitbook/gitbook-plugin-fontsettings/buttons.js"></script>
         
     
 

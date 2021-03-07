@@ -2,12 +2,12 @@
 <!DOCTYPE HTML>
 <html lang="" >
     <head>
-        <title>Spatial data processing with PySAL · Geographic Data Science with PySAL and the pydata stack</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Spatial data processing with PySAL · Geographic Data Science with PySAL and the pydata stack</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.1.1">
+        <meta name="generator" content="GitBook 3.2.3">
         
         
         
@@ -17,7 +17,7 @@
     
             
                 
-                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex/katex.min.css">
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-katex-dev/katex.min.css">
                 
             
                 
@@ -74,10 +74,6 @@
     <div class="book-summary">
         
             
-<div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
-</div>
-
             
                 <nav role="navigation">
                 
@@ -366,9 +362,6 @@
                     <div class="page-wrapper" tabindex="-1" role="main">
                         <div class="page-inner">
                             
-<div id="book-search-results">
-    <div class="search-noresults">
-    
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="spatial-data-processing-with-pysal--pandas">Spatial Data Processing with PySAL &amp; Pandas</h1>
@@ -1858,7 +1851,7 @@ WHERE
         x_centroid &lt; -121
 </code></pre><p>So, let&apos;s refer to an arbitrary polygon in the the dataframe&apos;s geometry column as <code>poly</code>. The centroid of a PySAL polygon is stored as an <code>(X,Y)</code> pair, so the longitude is the first element of the pair, <code>poly.centroid[0]</code>. </p>
 <p>Then, applying this condition to each geometry, we get the same kind of filter we used above to grab only counties in Arizona:</p>
-<pre><code class="lang-python">data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; <span class="hljs-number">-121</span>)\
+<pre><code class="lang-python">data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; -<span class="hljs-number">121</span>)\
                    .head()
 </code></pre>
 <pre><code>0    False
@@ -1868,7 +1861,7 @@ WHERE
 4    False
 Name: geometry, dtype: bool
 </code></pre><p>If we use this as a filter on the table, we can get only the rows that match that condition, just like we did for the <code>STATE_NAME</code> query:</p>
-<pre><code class="lang-python">data_table[data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; <span class="hljs-number">-119</span>)].head()
+<pre><code class="lang-python">data_table[data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; -<span class="hljs-number">119</span>)].head()
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -2027,7 +2020,7 @@ Name: geometry, dtype: bool
 
 
 
-<pre><code class="lang-python">len(data_table[data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; <span class="hljs-number">-119</span>)]) <span class="hljs-comment">#how many west of -119?</span>
+<pre><code class="lang-python">len(data_table[data_table.geometry.apply(<span class="hljs-keyword">lambda</span> x: x.centroid[<span class="hljs-number">0</span>] &lt; -<span class="hljs-number">119</span>)]) <span class="hljs-comment">#how many west of -119?</span>
 </code></pre>
 <pre><code>109
 </code></pre><h2 id="other-types-of-spatial-queries">Other types of spatial queries</h2>
@@ -2430,31 +2423,31 @@ Name: geometry, dtype: bool
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gcdk</span><span class="hljs-params">(loc1, loc2)</span>:</span>
     <span class="hljs-keyword">return</span> gcd(loc1, loc2, <span class="hljs-number">6367</span> )
 </code></pre>
-<pre><code class="lang-python">san_diego = <span class="hljs-number">-117.1611</span>, <span class="hljs-number">32.7157</span>
-austin = <span class="hljs-number">-97.7431</span>, <span class="hljs-number">30.2672</span>
+<pre><code class="lang-python">san_diego = -<span class="hljs-number">117.1611</span>, <span class="hljs-number">32.7157</span>
+austin = -<span class="hljs-number">97.7431</span>, <span class="hljs-number">30.2672</span>
 gcd(san_diego, austin)
 </code></pre>
 <pre><code>1155.474644164695
 </code></pre><pre><code class="lang-python">gcdk(san_diego, austin)
 </code></pre>
 <pre><code>1857.3357887898544
-</code></pre><pre><code class="lang-python">loc1 = (<span class="hljs-number">-117.1611</span>, <span class="hljs-number">0.0</span>)
-loc2 = (<span class="hljs-number">-118.1611</span>, <span class="hljs-number">0.0</span>)
+</code></pre><pre><code class="lang-python">loc1 = (-<span class="hljs-number">117.1611</span>, <span class="hljs-number">0.0</span>)
+loc2 = (-<span class="hljs-number">118.1611</span>, <span class="hljs-number">0.0</span>)
 gcd(loc1, loc2)
 </code></pre>
 <pre><code>69.13249167149539
-</code></pre><pre><code class="lang-python">loc1 = (<span class="hljs-number">-117.1611</span>, <span class="hljs-number">45.0</span>)
-loc2 = (<span class="hljs-number">-118.1611</span>, <span class="hljs-number">45.0</span>)
+</code></pre><pre><code class="lang-python">loc1 = (-<span class="hljs-number">117.1611</span>, <span class="hljs-number">45.0</span>)
+loc2 = (-<span class="hljs-number">118.1611</span>, <span class="hljs-number">45.0</span>)
 gcd(loc1, loc2)
 </code></pre>
 <pre><code>48.88374342930467
-</code></pre><pre><code class="lang-python">loc1 = (<span class="hljs-number">-117.1611</span>, <span class="hljs-number">89.0</span>)
-loc2 = (<span class="hljs-number">-118.1611</span>, <span class="hljs-number">89.0</span>)
+</code></pre><pre><code class="lang-python">loc1 = (-<span class="hljs-number">117.1611</span>, <span class="hljs-number">89.0</span>)
+loc2 = (-<span class="hljs-number">118.1611</span>, <span class="hljs-number">89.0</span>)
 gcd(loc1, loc2)
 </code></pre>
 <pre><code>1.2065130336642724
 </code></pre><pre><code class="lang-python">lats = range(<span class="hljs-number">0</span>, <span class="hljs-number">91</span>)
-onedeglon = [ gcd((<span class="hljs-number">-117.1611</span>,lat),(<span class="hljs-number">-118.1611</span>,lat)) <span class="hljs-keyword">for</span> lat <span class="hljs-keyword">in</span> lats]
+onedeglon = [ gcd((-<span class="hljs-number">117.1611</span>,lat),(-<span class="hljs-number">118.1611</span>,lat)) <span class="hljs-keyword">for</span> lat <span class="hljs-keyword">in</span> lats]
 </code></pre>
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
 %matplotlib inline
@@ -2465,8 +2458,8 @@ plt.title(<span class="hljs-string">&apos;Length of a degree of longitude&apos;<
 </code></pre>
 <pre><code>&lt;matplotlib.text.Text at 0x114174470&gt;
 </code></pre><p><img src="01_data_processing_files/01_data_processing_87_1.png" alt="png"></p>
-<pre><code class="lang-python">san_diego = <span class="hljs-number">-117.1611</span>, <span class="hljs-number">32.7157</span>
-austin = <span class="hljs-number">-97.7431</span>, <span class="hljs-number">30.2672</span>
+<pre><code class="lang-python">san_diego = -<span class="hljs-number">117.1611</span>, <span class="hljs-number">32.7157</span>
+austin = -<span class="hljs-number">97.7431</span>, <span class="hljs-number">30.2672</span>
 gcd(san_diego, austin)
 </code></pre>
 <pre><code>1155.474644164695
@@ -2853,22 +2846,6 @@ HRs
                                 
                                 </section>
                             
-    </div>
-    <div class="search-results">
-        <div class="has-results">
-            
-            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
-            <ul class="search-results-list"></ul>
-            
-        </div>
-        <div class="no-results">
-            
-            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
-            
-        </div>
-    </div>
-</div>
-
                         </div>
                     </div>
                 
@@ -2892,7 +2869,7 @@ HRs
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"next":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"previous":{"title":"Part I","level":"1.7","depth":1,"path":"content/part1/README.md","ref":"content/part1/README.md","articles":[{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["katex"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/01_data_processing.md","mtime":"2016-07-12T14:39:01.000Z","type":"markdown"},"gitbook":{"version":"3.1.1","time":"2016-07-12T14:45:16.808Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"next":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"previous":{"title":"Part I","level":"1.7","depth":1,"path":"content/part1/README.md","ref":"content/part1/README.md","articles":[{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{"maxIndexSize":1000000},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/01_data_processing.md","mtime":"2021-03-06T07:26:35.197Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-07T11:42:45.939Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -2902,7 +2879,7 @@ HRs
     <script src="../gitbook/theme.js"></script>
     
         
-        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        <script src="../gitbook/gitbook-plugin-search/lunr.min.js"></script>
         
     
         
@@ -2922,7 +2899,7 @@ HRs
         
     
         
-        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../gitbook/gitbook-plugin-fontsettings/buttons.js"></script>
         
     
 
