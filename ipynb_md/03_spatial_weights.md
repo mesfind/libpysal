@@ -1,4 +1,3 @@
-
 # Spatial Weights
 
 > [`IPYNB`](../content/part1/03_spatial_weights.ipynb)

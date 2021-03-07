@@ -1,4 +1,3 @@
-
 # Spatial Data Processing with PySAL & Pandas
 
 > [`IPYNB`](../content/part1/01_data_processing.ipynb)

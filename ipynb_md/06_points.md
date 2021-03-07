@@ -1,4 +1,3 @@
-
 # Point Patterns
 
 > [`IPYNB`](../content/part2/06_points.ipynb)
@@ -262,10 +261,10 @@ options = dict(line_color=None, fill_color='#800080', size=4)
 
 
 
-    <div class="bk-banner">
-        <a href="http://bokeh.pydata.org" target="_blank" class="bk-logo bk-logo-small bk-logo-notebook"></a>
-        <span id="efa98bda-2ccf-4dbf-ae97-94033d60c79b">Loading BokehJS ...</span>
-    </div>
+<div class="bk-banner">
+    <a href="http://bokeh.pydata.org" target="_blank" class="bk-logo bk-logo-small bk-logo-notebook"></a>
+    <span id="efa98bda-2ccf-4dbf-ae97-94033d60c79b">Loading BokehJS ...</span>
+</div>
 
 
 

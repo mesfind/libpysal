@@ -1,4 +1,3 @@
-
 # Spatial Regression
 
 > [`IPYNB`](../content/part2/08_spatial_regression.ipynb)

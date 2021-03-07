@@ -1,4 +1,3 @@
-
 # Exploratory Spatial and Temporal Data Analysis (ESTDA)
 
 > [`IPYNB`](../content/part1/05_spatial_dynamics.ipynb)

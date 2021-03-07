@@ -1,4 +1,3 @@
-
 #  Spatial Clustering
 
 > [`IPYNB`](../content/part2/07_spatial_clustering.ipynb)
