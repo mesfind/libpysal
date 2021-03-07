@@ -5,7 +5,7 @@ Python 2 and 3 on the following three platforms:
 
 - Linux (Ubuntu-Mate x64)
 - Windows 10 (x64)
-- Mac OS X (10.15.9 x64).
+- Mac OS X (10.15.7 x64).
 
 The workshop depends on the following libraries/versions:
 
