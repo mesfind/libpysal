@@ -396,8 +396,9 @@
 <pre><code class="lang-python">%matplotlib inline
 <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
 <span class="hljs-keyword">import</span> pysal <span class="hljs-keyword">as</span> ps
+<span class="hljs-keyword">import</span> libpysal <span class="hljs-keyword">as</span> lp
 <span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rdm
-<span class="hljs-keyword">from</span> pysal.contrib.viz <span class="hljs-keyword">import</span> mapping <span class="hljs-keyword">as</span> maps
+<span class="hljs-keyword">from</span> splot <span class="hljs-keyword">import</span> mapping <span class="hljs-keyword">as</span> maps
 <span class="hljs-keyword">from</span> pylab <span class="hljs-keyword">import</span> *
 </code></pre>
 <h3 id="lower-level-component">Lower-level component</h3>
@@ -409,9 +410,9 @@
 </ul>
 <p>These methods all support an option to subset the observations to be plotted (very useful when missing values are present). They can also be overlaid and combined by using the <code>setup_ax</code> function. the resulting object is very basic but also very flexible so, for minds used to matplotlib this should be good news as it allows to modify pretty much any property and attribute.</p>
 <h4 id="example">Example</h4>
-<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>
-shp = ps.open(shp_link)
-some = [bool(rdm.getrandbits(<span class="hljs-number">1</span>)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ps.open(shp_link)]
+<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
+shp = lp.io.open(shp_link)
+some = [bool(rdm.getrandbits(<span class="hljs-number">1</span>)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> lp.io.open(shp_link)]
 
 fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
 
@@ -439,12 +440,12 @@ show()
 <li><code>base_choropleth_classif</code></li>
 </ul>
 <h4 id="example">Example</h4>
-<pre><code class="lang-python">net_link = ps.examples.get_path(<span class="hljs-string">&apos;eberly_net.shp&apos;</span>)
-net = ps.open(net_link)
+<pre><code class="lang-python">net_link = lp.io.examples.get_path(<span class="hljs-string">&apos;eberly_net.shp&apos;</span>)
+net = lp.io.open(net_link)
 values = np.array(ps.open(net_link.replace(<span class="hljs-string">&apos;.shp&apos;</span>, <span class="hljs-string">&apos;.dbf&apos;</span>)).by_col(<span class="hljs-string">&apos;TNODE&apos;</span>))
 
 pts_link = ps.examples.get_path(<span class="hljs-string">&apos;eberly_net_pts_onnetwork.shp&apos;</span>)
-pts = ps.open(pts_link)
+pts = lp.io.open(pts_link)
 
 fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
 
@@ -461,7 +462,7 @@ fig.add_axes(ax)
 show()
 </code></pre>
 <p><img src="02_geovisualization_files/02_geovisualization_8_0.png" alt="png"></p>
-<pre><code class="lang-python">maps.plot_poly_lines(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>)
+<pre><code class="lang-python">maps.plot_poly_lines(<span class="hljs-string">&apos;data/texas.shp&apos;</span>)
 </code></pre>
 <pre><code>callng plt.show()
 </code></pre><p><img src="02_geovisualization_files/02_geovisualization_9_1.png" alt="png"></p>
@@ -470,7 +471,7 @@ show()
 <ul>
 <li><code>plot_poly_lines</code>: very quick shapfile plotting</li>
 </ul>
-<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>
+<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
 values = np.array(ps.open(<span class="hljs-string">&apos;../data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
 
 types = [<span class="hljs-string">&apos;classless&apos;</span>, <span class="hljs-string">&apos;unique_values&apos;</span>, <span class="hljs-string">&apos;quantiles&apos;</span>, <span class="hljs-string">&apos;equal_interval&apos;</span>, <span class="hljs-string">&apos;fisher_jenks&apos;</span>]
@@ -548,7 +549,7 @@ Lower            Upper              Count
 <pre><code>array([  3.15613527,   8.84642604,  15.88088069,  27.63957988,  43.51610096])
 </code></pre><h2 id="geopandas">GeoPandas</h2>
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
-shp_link = <span class="hljs-string">&quot;../data/texas.shp&quot;</span>
+shp_link = <span class="hljs-string">&quot;data/texas.shp&quot;</span>
 tx = gpd.read_file(shp_link)
 tx.plot(color=<span class="hljs-string">&apos;blue&apos;</span>)
 </code></pre>
@@ -1040,7 +1041,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-07T13:57:09.770Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-07T14:02:56.813Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for the workshop at Scipy'16"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-07T14:46:02.846Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-07T15:04:32.023Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
