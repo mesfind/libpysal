@@ -257,6 +257,7 @@
     "sigmund": "^1.0.1",
     "slick": "^1.12.1",
     "sntp": "^0.2.4",
+    "snyk": "^1.474.0",
     "source-map": "^0.5.7",
     "spawn-cmd": "^0.0.2",
     "spdx-correct": "^3.1.1",
