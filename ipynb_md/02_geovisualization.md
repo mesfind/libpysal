@@ -34,8 +34,9 @@ The  mapping module in PySAL is organized around three main layers:
 %matplotlib inline
 import numpy as np
 import pysal as ps
+import libpysal as lp
 import random as rdm
-from pysal.contrib.viz import mapping as maps
+from splot import mapping as maps
 from pylab import *
 ```
 
@@ -53,9 +54,9 @@ These methods all support an option to subset the observations to be plotted (ve
 
 
 ```python
-shp_link = '../data/texas.shp'
-shp = ps.open(shp_link)
-some = [bool(rdm.getrandbits(1)) for i in ps.open(shp_link)]
+shp_link = 'data/texas.shp'
+shp = lp.io.open(shp_link)
+some = [bool(rdm.getrandbits(1)) for i in lp.io.open(shp_link)]
 
 fig = figure(figsize=(9,9))
 
@@ -91,12 +92,12 @@ This layer comprises functions that perform usual transformations on matplotlib 
 
 
 ```python
-net_link = ps.examples.get_path('eberly_net.shp')
-net = ps.open(net_link)
+net_link = lp.io.examples.get_path('eberly_net.shp')
+net = lp.io.open(net_link)
 values = np.array(ps.open(net_link.replace('.shp', '.dbf')).by_col('TNODE'))
 
 pts_link = ps.examples.get_path('eberly_net_pts_onnetwork.shp')
-pts = ps.open(pts_link)
+pts = lp.io.open(pts_link)
 
 fig = figure(figsize=(9,9))
 
@@ -119,7 +120,7 @@ show()
 
 
 ```python
-maps.plot_poly_lines('../data/texas.shp')
+maps.plot_poly_lines('data/texas.shp')
 ```
 
     callng plt.show()
@@ -137,7 +138,7 @@ This currently includes the following end-user functions:
 
 
 ```python
-shp_link = '../data/texas.shp'
+shp_link = 'data/texas.shp'
 values = np.array(ps.open('../data/texas.dbf').by_col('HR90'))
 
 types = ['classless', 'unique_values', 'quantiles', 'equal_interval', 'fisher_jenks']
@@ -316,7 +317,7 @@ hr90fj5.bins # upper bounds of each bin
 
 ```python
 import geopandas as gpd
-shp_link = "../data/texas.shp"
+shp_link = "data/texas.shp"
 tx = gpd.read_file(shp_link)
 tx.plot(color='blue')
 ```

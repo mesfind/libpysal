@@ -7,7 +7,7 @@
 ```python
 #by convention, we use these shorter two-letter names
 import pysal as ps
-import libpysal as lps
+import libpysal as lp
 import pandas as pd
 import numpy as np
 ```
@@ -19,7 +19,7 @@ PySAL has two simple ways to read in data. But, first, you need to get the path 
 !pwd # on windows !cd
 ```
 
-    /home/serge/Dropbox/p/pysal/workshops/scipy16/gds_scipy16/content/part1
+    /Users/admin/Devel/libpysal/gds/content/part1
 
 
 PySAL has a command that it uses to get the paths of its example datasets. Let's work with a commonly-used dataset first. 
@@ -65,7 +65,7 @@ lps.examples.available()
 
 
 ```python
-ps.examples.explain('us_income')
+lp.examples.explain('us_income')
 ```
 
 
@@ -87,7 +87,7 @@ csv_path = lps.examples.get_path('usjoin.csv')
 
 
 ```python
-f = ps.lib.io.open(csv_path)
+f = lp.io.open(csv_path)
 f.header[0:10]
 ```
 
@@ -132,18 +132,18 @@ To read in a shapefile, we will need the path to the file.
 
 
 ```python
-shp_path = '../data/texas.shp'
+shp_path = 'data/texas.shp'
 print(shp_path)
 ```
 
-    ../data/texas.shp
+    data/texas.shp
 
 
 Then, we open the file using the `ps.open` command:
 
 
 ```python
-f = ps.lib.io.open(shp_path)
+f = lp.io.open(shp_path)
 ```
 
 `f` is what we call a "file handle." That means that it only *points* to the data and provides ways to work with it. By itself, it does not read the whole dataset into memory. To see basic information about the file, we can use a few different methods. 
