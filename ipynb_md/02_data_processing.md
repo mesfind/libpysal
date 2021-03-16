@@ -488,23 +488,12 @@ These methods work similarly for `.csv` files as well.
 A new functionality added to PySAL recently allows you to work with shapefile/dbf pairs using Pandas. This *optional* extension is only turned on if you have Pandas installed. The extension is the `ps.pdio` module:
 
 
-```python
-ps.pdio
-```
-
-
-
-
-    <module 'pysal.contrib.pdutilities' from '/home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/pysal/contrib/pdutilities/__init__.py'>
-
-
-
-To use it, you can read in shapefile/dbf pairs using the `ps.pdio.read_files` command. 
+To use it, you can read in shapefile/dbf pairs using the `gdp.read_files` command. 
 
 
 ```python
-shp_path = ps.examples.get_path('NAT.shp')
-data_table = ps.pdio.read_files(shp_path)
+shp_path = lps.examples.get_path('NAT.shp')
+data_table = gpd.read_file(shp_path)
 ```
 
 This reads in *the entire database table* and adds a column to the end, called `geometry`, that stores the geometries read in from the shapefile. 
@@ -679,8 +668,8 @@ The `read_files` function only works on shapefile/dbf pairs. If you need to read
 
 
 ```python
+csv_path = lps.examples.get_path('usjoin.csv')
 usjoin = pd.read_csv(csv_path)
-#usjoin = ps.pdio.read_files(csv_path) #will not work, not a shp/dbf pair
 ```
 
 
