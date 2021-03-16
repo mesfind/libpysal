@@ -32,69 +32,57 @@ The  mapping module in PySAL is organized around three main layers:
 
 ```python
 %matplotlib inline
-import numpy as np
 import mapclassify
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import geoviews as gv
-import geoviews.feature as gf
-import xarray as xr
-from cartopy import crs
-import hvplot.pandas
 import contextily as cx
-import pysal as ps
-import libpysal as lp
-import random as rdm
-from splot import mapping as maps
-from pylab import *
 ```
 
 ### Lower-level component
 
 This includes basic functionality to read spatial data from a file (currently only shapefiles supported) and produce rudimentary Matplotlib objects. The main methods are:
 
-- map_poly_shape: to read in polygon shapefiles
-- map_line_shape: to read in line shapefiles
-- map_point_shape: to read in point shapefiles
-
-These methods all support an option to subset the observations to be plotted (very useful when missing values are present). They can also be overlaid and combined by using the `setup_ax` function. the resulting object is very basic but also very flexible so, for minds used to matplotlib this should be good news as it allows to modify pretty much any property and attribute.
+-  to read in polygon shapefiles
+-  to read in line shapefiles
+-  to read in point shapefiles
 
 #### Example
 
-```python
-import geopandas as gpd
-cities = gpd.read_file(gpd.datasets.get_path('naturalearth_cities'))
+* Let us see the columns in the shapefile 
 
-cities.hvplot(global_extent=True, frame_height=450, tiles=True)
+```python
+shp_link = '../data/texas.shp'
+gdf = gpd.read_file(shp_link)
+gdf = gdf.to_crs(3857)
+print(gdf.columns)
 ```
 
+* An exploratory workflow uses **mapclassify and geopandas** to create different choropleth classifications and maps for quick exploratory data analysis.
+
+* The geoviews package can be used for interactive mapping in support of exploratory spatial data analysis.
+
+```python
+f, ax = plt.subplots(1, figsize=(12, 8))
+gdf.plot(column='HR60', scheme='QUANTILES', ax=ax,
+        edgecolor='white', legend=True, linewidth=0.3)
+ax.set_axis_off()
+plt.show()
+```
+
+* If you don't know a place extremely well it's often a good idea to add a basemap for context. We can do that easily using the contextily package
 
 
 ```python
-import geopandas as gpd
-shp_link = 'data/texas.shp'
-gdf_shp = gpd.read_file(shp_link)
-gdf_shp = gdf_shp.to_crs(3857)
-some = [bool(rdm.getrandbits(1)) for i in lps.io.open(shp_link)]
-
-fig = plt.figure(figsize=(9,9))
-
-base = gpd_shp.plot(linewidth=0.75, edgecolor=0.)
-base.set_facecolor('none')
-some = gpd_shp.plot(linewidth=0.75, edgecolor=0.,  cmap='')
-some.set_alpha(0.5)
-cents = np.array([poly.centroid for poly in lps.io.open(shp_link)])
-pts = plt.scatter(cents[:, 0], cents[:, 1])
-pts.set_color('red')
-
-ax = maps.setup_ax([base, some, pts], [shp.bbox, shp.bbox, shp.bbox])
-fig.add_axes(ax)
-plt.tight_layout()
+gdf.fillna(gdf.mean(), inplace = True)
+f, ax = plt.subplots(1, figsize=(12, 8))
+gdf.plot(column='HR60', scheme='QUANTILES', alpha=0.6, ax=ax, legend=True)
+cx.add_basemap(ax, crs=gdf.crs.to_string(), source=cx.providers.Stamen.TonerLite)
+ax.set_axis_off()
 plt.show()
 ```
 
 
-![png](02_geovisualization_files/02_geovisualization_6_0.png)
+
 
 
 ### Medium-level component
@@ -113,10 +101,10 @@ net_link = lp.io.examples.get_path('eberly_net.shp')
 net = lp.io.open(net_link)
 values = np.array(ps.open(net_link.replace('.shp', '.dbf')).by_col('TNODE'))
 
-pts_link = ps.examples.get_path('eberly_net_pts_onnetwork.shp')
+pts_link = lps.io.examples.get_path('eberly_net_pts_onnetwork.shp')
 pts = lp.io.open(pts_link)
 
-fig = figure(figsize=(9,9))
+fig, ax = plt.figure(figsize=(9,9))
 
 netm = maps.map_line_shp(net)
 netc = maps.base_choropleth_unique(netm, values)
@@ -126,9 +114,8 @@ ptsm = maps.base_choropleth_classif(ptsm, values)
 ptsm.set_alpha(0.5)
 ptsm.set_linewidth(0.)
 
-ax = maps.setup_ax([netc, ptsm], [net.bbox, net.bbox])
 fig.add_axes(ax)
-show()
+plt.show()
 ```
 
 
@@ -156,7 +143,7 @@ This currently includes the following end-user functions:
 
 ```python
 shp_link = 'data/texas.shp'
-values = np.array(ps.open('../data/texas.dbf').by_col('HR90'))
+values = np.array(lps.io.open('../data/texas.dbf').by_col('HR90'))
 
 types = ['classless', 'unique_values', 'quantiles', 'equal_interval', 'fisher_jenks']
 for typ in types:
@@ -187,8 +174,10 @@ for typ in types:
 
 
 ```python
-hr90 = values
-hr90q5 = ps.Quantiles(hr90, k=5)
+
+shp_link = 'data/texas.shp'
+hr90 = np.array(lps.io.open('../data/texas.dbf').by_col('HR90'))
+hr90q5 =mapclassify.Quantiles(hr90, k=5)
 hr90q5
 ```
 
@@ -209,7 +198,7 @@ hr90q5
 
 
 ```python
-hr90q4 = ps.Quantiles(hr90, k=4)
+hr90q4 = mapclassify.Quantiles(hr90, k=4)
 hr90q4
 ```
 
@@ -229,7 +218,7 @@ hr90q4
 
 
 ```python
-hr90e5 = ps.Equal_Interval(hr90, k=5)
+hr90e5 = mapclassify.EqualInterval(hr90, k=5)
 hr90e5
 ```
 
@@ -250,14 +239,14 @@ hr90e5
 
 
 ```python
-hr90fj5 = ps.Fisher_Jenks(hr90, k=5)
+hr90fj5 = mapclassify.FisherJenks(hr90, k=5) 
 hr90fj5
 ```
 
 
 
 
-                   Fisher_Jenks              
+                   FisherJenks              
      
     Lower            Upper              Count
     =========================================
@@ -342,7 +331,7 @@ tx.plot(color='blue')
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x11ceab6a0>
+    <AxesSubplot:>
 
 
 
@@ -541,7 +530,7 @@ ax.set_axis_off()
 plt.show()
 ```
 
-    /Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/geopandas/geodataframe.py:447: UserWarning: Invalid k: 10 (2 <= k <= 9), setting k=5 (default)
+    /Users/admin/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/geopandas/geodataframe.py:447: UserWarning: Invalid k: 10 (2 <= k <= 9), setting k=5 (default)
       return plot_dataframe(self, *args, **kwargs)
 
 
