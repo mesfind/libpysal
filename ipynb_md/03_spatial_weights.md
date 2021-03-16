@@ -14,6 +14,9 @@ We begin with construction of weights from common spatial data formats.
 ```python
 import pysal as ps
 import numpy as np
+import libpysal as lps
+from libpysal.weights import Queen, Rook, KNN, Kernel, DistanceBand,w_difference
+from splot.libpysal import plot_spatial_weights
 ```
 
 There are functions to construct weights directly from a file path. 
@@ -34,8 +37,8 @@ To construct queen weights from a shapefile, use the `queen_from_shapefile` func
 
 
 ```python
-qW = ps.queen_from_shapefile(shp_path)
-dataframe = ps.pdio.read_files(shp_path)
+df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(df)
 ```
 
 
@@ -46,7 +49,7 @@ qW
 
 
 
-    <pysal.weights.weights.W at 0x104142860>
+    <libpysal.weights.contiguity.Queen at 0x7fea4dfb36a0>
 
 
 
@@ -82,7 +85,7 @@ and grabbing those elements from the dataframe:
 
 
 ```python
-dataframe.loc[self_and_neighbors]
+df.loc[self_and_neighbors]
 ```
 
 
@@ -403,7 +406,7 @@ For example, the `texas.shp` dataset has a possible alternative ID Variable, a `
 
 
 ```python
-dataframe.head()
+df.head()
 ```
 
 
@@ -571,7 +574,8 @@ Then, instead of indexing the weights and the dataframe just based on read-order
 
 
 ```python
-qW = ps.queen_from_shapefile(shp_path, idVariable='FIPS')
+df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(df,idVariable,idVariable='FIPS')
 ```
 
 
@@ -631,7 +635,7 @@ Then, we can use this list in `.query`:
 
 
 ```python
-dataframe.query('FIPS in @self_and_neighbors')
+df.query('FIPS in @self_and_neighbors')
 ```
 
 
@@ -821,14 +825,14 @@ Note that we have to use `@` before the name in order to show that we're referri
 
 
 ```python
-#dataframe.query('FIPS in self_and_neighbors') will fail because there is no column called 'self_and_neighbors'
+#df.query('FIPS in self_and_neighbors') will fail because there is no column called 'self_and_neighbors'
 ```
 
 Of course, we could also reindex the dataframe to use the same index as our weights:
 
 
 ```python
-fips_frame = dataframe.set_index(dataframe.FIPS)
+fips_frame = df.set_index(df.FIPS)
 fips_frame.head()
 ```
 
@@ -1237,7 +1241,7 @@ We can construct this in the same way as the queen weights, using the special `r
 
 
 ```python
-rW = ps.rook_from_shapefile(shp_path, idVariable='FIPS')
+rW = Rook.from_dataframe(df,idVariable='FIPS')
 ```
 
 
@@ -1436,7 +1440,7 @@ PySAL does not have a dedicated bishop weights constructor, but you can construc
 
 
 ```python
-bW = ps.w_difference(qW, rW, constrained=False, silent_island_warning=True) #silence because there will be a lot of warnings
+bW = w_difference(qW, rW, constrained=False) 
 ```
 
 
@@ -1461,7 +1465,7 @@ islands = bW.islands
 
 ```python
 # Using `.head()` to limit the number of rows printed
-dataframe.query('FIPS not in @islands').head()
+df.query('FIPS not in @islands').head()
 ```
 
 
@@ -1629,7 +1633,7 @@ There are many other kinds of weighting functions in PySAL. Another separate typ
 
 
 ```python
-radius = ps.cg.sphere.RADIUS_EARTH_MILES
+radius = lps.cg.sphere.RADIUS_EARTH_MILES
 radius
 ```
 
@@ -1666,7 +1670,8 @@ threshold
 
 
 ```python
-knn4_bad = ps.knnW_from_shapefile('../data/texas.shp', k=4) # ignore curvature of the earth
+from libpysal.weights import KNN
+knn4_bad = KNN.from_shapefile('../data/texas.shp', k=4) # ignore curvature of the earth
 ```
 
 
@@ -1683,7 +1688,7 @@ knn4_bad.histogram
 
 
 ```python
-knn4 = ps.knnW_from_shapefile('../data/texas.shp', k=4, radius=radius)
+knn4 = KNN.from_shapefile('../data/texas.shp', k=4, radius=radius)
 ```
 
 
@@ -1733,20 +1738,20 @@ For example, if we want to use adaptive bandwidths for the map and weight accord
 
 
 ```python
-kernelWa = ps.adaptive_kernelW_from_shapefile('../data/texas.shp', radius=radius)
+kernelWa = Kernel.from_dataframe(df, k=10, fixed=False, function='gaussian')
 kernelWa
 ```
 
 
 
 
-    <pysal.weights.Distance.Kernel at 0x7f8fe4cfe080>
+    <libpysal.weights.distance.DistanceBand at 0x7fea4e2183c8>
 
 
 
 
 ```python
-dataframe.loc[kernelWa.neighbors[4] + [4]]
+df.loc[kernelWa.neighbors[4] + [4]]
 ```
 
 
@@ -1936,8 +1941,8 @@ kernelWa[2]
 
 ```python
 # find the largest nearest neighbor distance between centroids
-threshold = ps.min_threshold_dist_from_shapefile('../data/texas.shp', radius=radius) # decimal degrees
-Wmind0 = ps.threshold_binaryW_from_shapefile('../data/texas.shp', radius=radius, threshold=threshold*.9)
+threshold = DistanceBand.from_shapefile('../data/texas.shp', threshold=radius) # decimal degrees
+Wmind0 = threshold.binary
 ```
 
     WARNING: there are 2 disconnected observations
@@ -2007,7 +2012,7 @@ Wmind.histogram
 
 
 ```python
-centroids = np.array([list(poly.centroid) for poly in dataframe.geometry])
+centroids = np.array([poly for poly in df.geometry.centroid])
 ```
 
 
@@ -2061,12 +2066,14 @@ knn4[0]
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
-from pylab import figure, scatter, show
+from pylab import figure, scatter
 ```
 
 
 ```python
-wq = ps.queen_from_shapefile('../data/texas.shp')
+shp_path = '../data/texas.shp'
+gpd_shp = gpd.read_file(shp_path)
+wq = Queen.from_dataframe(gpd_shp)
 ```
 
 
@@ -2086,7 +2093,7 @@ wq[0]
 fig = figure(figsize=(9,9))
 plt.plot(centroids[:,0], centroids[:,1],'.')
 plt.ylim([25,37])
-show()
+plt.show()
 ```
 
 

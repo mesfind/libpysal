@@ -33,6 +33,15 @@ The  mapping module in PySAL is organized around three main layers:
 ```python
 %matplotlib inline
 import numpy as np
+import mapclassify
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import geoviews as gv
+import geoviews.feature as gf
+import xarray as xr
+from cartopy import crs
+import hvplot.pandas
+import contextily as cx
 import pysal as ps
 import libpysal as lp
 import random as rdm
@@ -52,28 +61,36 @@ These methods all support an option to subset the observations to be plotted (ve
 
 #### Example
 
+```python
+import geopandas as gpd
+cities = gpd.read_file(gpd.datasets.get_path('naturalearth_cities'))
+
+cities.hvplot(global_extent=True, frame_height=450, tiles=True)
+```
+
+
 
 ```python
+import geopandas as gpd
 shp_link = 'data/texas.shp'
-shp = lp.io.open(shp_link)
-some = [bool(rdm.getrandbits(1)) for i in lp.io.open(shp_link)]
+gdf_shp = gpd.read_file(shp_link)
+gdf_shp = gdf_shp.to_crs(3857)
+some = [bool(rdm.getrandbits(1)) for i in lps.io.open(shp_link)]
 
-fig = figure(figsize=(9,9))
+fig = plt.figure(figsize=(9,9))
 
-base = maps.map_poly_shp(shp)
+base = gpd_shp.plot(linewidth=0.75, edgecolor=0.)
 base.set_facecolor('none')
-base.set_linewidth(0.75)
-base.set_edgecolor('0.8')
-some = maps.map_poly_shp(shp, which=some)
+some = gpd_shp.plot(linewidth=0.75, edgecolor=0.,  cmap='')
 some.set_alpha(0.5)
-some.set_linewidth(0.)
-cents = np.array([poly.centroid for poly in ps.open(shp_link)])
-pts = scatter(cents[:, 0], cents[:, 1])
+cents = np.array([poly.centroid for poly in lps.io.open(shp_link)])
+pts = plt.scatter(cents[:, 0], cents[:, 1])
 pts.set_color('red')
 
 ax = maps.setup_ax([base, some, pts], [shp.bbox, shp.bbox, shp.bbox])
 fig.add_axes(ax)
-show()
+plt.tight_layout()
+plt.show()
 ```
 
 
