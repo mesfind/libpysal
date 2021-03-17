@@ -397,6 +397,7 @@
 <span class="hljs-keyword">import</span> mapclassify
 <span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
 <span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns
 <span class="hljs-keyword">import</span> contextily <span class="hljs-keyword">as</span> cx
 </code></pre>
 <h3 id="lower-level-component">Lower-level component</h3>
@@ -407,8 +408,22 @@
 <li>to read in point shapefiles</li>
 </ul>
 <h4 id="example">Example</h4>
+<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
+shp = gpd.read_file(shp_link)
+some = [bool(rdm.getrandbits(<span class="hljs-number">1</span>)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> lps.io.open(shp_link)]
+
+fig, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
+
+shp.plot(facecolor=<span class="hljs-keyword">None</span>, linewidth=<span class="hljs-number">0.75</span>, edgecolor=<span class="hljs-string">&apos;red&apos;</span>,ax=ax,)
+shp.plot(categorical=some,alpha=<span class="hljs-number">0.5</span>,linewidth=<span class="hljs-number">0</span>,ax=ax)
+cents = np.array([poly.centroid <span class="hljs-keyword">for</span> poly <span class="hljs-keyword">in</span> lps.io.open(shp_link)])
+pts = sns.scatterplot(x=cents[:, <span class="hljs-number">0</span>], y=cents[:, <span class="hljs-number">1</span>],ax=ax,color=<span class="hljs-string">&apos;red&apos;</span>)
+plt.tight_layout()
+plt.show()
+</code></pre>
+<p><img src="02_geovisualization_files/02_geovisualization_6_0.png" alt="png"></p>
 <ul>
-<li>Let us see the columns in the shapefile </li>
+<li>We can access the columns in the shapefile:</li>
 </ul>
 <pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>
 gdf = gpd.read_file(shp_link)
@@ -445,42 +460,43 @@ plt.show()
 <li><code>base_choropleth_classif</code></li>
 </ul>
 <h4 id="example">Example</h4>
-<pre><code class="lang-python">net_link = lp.io.examples.get_path(<span class="hljs-string">&apos;eberly_net.shp&apos;</span>)
-net = lp.io.open(net_link)
-values = np.array(ps.open(net_link.replace(<span class="hljs-string">&apos;.shp&apos;</span>, <span class="hljs-string">&apos;.dbf&apos;</span>)).by_col(<span class="hljs-string">&apos;TNODE&apos;</span>))
+<pre><code class="lang-python">net_link = lps.examples.get_path(<span class="hljs-string">&apos;eberly_net.shp&apos;</span>)
+net = lps.io.open(net_link)
+values = np.array(lps.io.open(net_link.replace(<span class="hljs-string">&apos;.shp&apos;</span>, <span class="hljs-string">&apos;.dbf&apos;</span>)).by_col(<span class="hljs-string">&apos;TNODE&apos;</span>))
 
-pts_link = lps.io.examples.get_path(<span class="hljs-string">&apos;eberly_net_pts_onnetwork.shp&apos;</span>)
-pts = lp.io.open(pts_link)
+pts_link = lps.examples.get_path(<span class="hljs-string">&apos;eberly_net_pts_onnetwork.shp&apos;</span>)
 
-fig, ax = plt.figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
+fig, ax = plt.subplots(<span class="hljs-number">1</span>,figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
 
-netm = maps.map_line_shp(net)
-netc = maps.base_choropleth_unique(netm, values)
 
-ptsm = maps.map_point_shp(pts)
-ptsm = maps.base_choropleth_classif(ptsm, values)
-ptsm.set_alpha(<span class="hljs-number">0.5</span>)
-ptsm.set_linewidth(<span class="hljs-number">0.</span>)
+netm = gpd.read_file(net_link)
+netc =gpd.read_file(pts_link)
+netm.plot(column=<span class="hljs-string">&apos;TNODE&apos;</span>,scheme=<span class="hljs-string">&apos;quantiles&apos;</span>,ax=ax,cmap=<span class="hljs-string">&apos;OrRd&apos;</span>)
+netc.plot(column=<span class="hljs-string">&apos;variable&apos;</span>,ax=ax,alpha=<span class="hljs-number">0.5</span>,linewidth=<span class="hljs-number">0.</span>)
 
-fig.add_axes(ax)
+ax.set_axis_off()
 plt.show()
 </code></pre>
 <p><img src="02_geovisualization_files/02_geovisualization_8_0.png" alt="png"></p>
-<pre><code class="lang-python">maps.plot_poly_lines(<span class="hljs-string">&apos;data/texas.shp&apos;</span>)
-</code></pre>
-<pre><code>callng plt.show()
-</code></pre><p><img src="02_geovisualization_files/02_geovisualization_9_1.png" alt="png"></p>
 <h3 id="higher-level-component">Higher-level component</h3>
 <p>This currently includes the following end-user functions:</p>
 <ul>
 <li><code>plot_poly_lines</code>: very quick shapfile plotting</li>
 </ul>
 <pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
-values = np.array(lps.io.open(<span class="hljs-string">&apos;../data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
-
-types = [<span class="hljs-string">&apos;classless&apos;</span>, <span class="hljs-string">&apos;unique_values&apos;</span>, <span class="hljs-string">&apos;quantiles&apos;</span>, <span class="hljs-string">&apos;equal_interval&apos;</span>, <span class="hljs-string">&apos;fisher_jenks&apos;</span>]
+texas = gpd.read_file(<span class="hljs-string">&apos;data/texas.shp&apos;</span>)
+values = np.array(lps.io.open(<span class="hljs-string">&apos;data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
+q10 = mc.Quantiles(texas.HR90, k=<span class="hljs-number">10</span>)
+types = [<span class="hljs-string">&apos;BoxPlot&apos;</span>, <span class="hljs-string">&apos;EqualInterval&apos;</span>, <span class="hljs-string">&apos;FisherJenks&apos;</span>, <span class="hljs-string">&apos;FisherJenksSampled&apos;</span>,
+    <span class="hljs-string">&apos;HeadTailBreaks&apos;</span>, <span class="hljs-string">&apos;JenksCaspall&apos;</span>, <span class="hljs-string">&apos;JenksCaspallForced&apos;</span>,
+    <span class="hljs-string">&apos;JenksCaspallSampled&apos;</span>, <span class="hljs-string">&apos;MaxP&apos;</span>, <span class="hljs-string">&apos;MaximumBreaks&apos;</span>,
+    <span class="hljs-string">&apos;NaturalBreaks&apos;</span>, <span class="hljs-string">&apos;Quantiles&apos;</span>, <span class="hljs-string">&apos;Percentiles&apos;</span>, <span class="hljs-string">&apos;StdMean&apos;</span>]
+f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">16</span>, <span class="hljs-number">9</span>))
 <span class="hljs-keyword">for</span> typ <span class="hljs-keyword">in</span> types:
-    maps.plot_choropleth(shp_link, values, typ, title=typ)
+    texas.assign(cl=values).plot(column=<span class="hljs-string">&apos;HR90&apos;</span>,scheme=typ,legend=<span class="hljs-keyword">True</span>,
+                          legend_kwds={<span class="hljs-string">&apos;loc&apos;</span>: <span class="hljs-string">&apos;lower right&apos;</span>})
+ax.set_axis_off()
+plt.show()
 </code></pre>
 <p><img src="02_geovisualization_files/02_geovisualization_11_0.png" alt="png"></p>
 <p><img src="02_geovisualization_files/02_geovisualization_11_1.png" alt="png"></p>
@@ -1047,7 +1063,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-16T19:47:33.111Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-17T05:30:17.299Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-17T14:20:32.188Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-17T14:22:04.167Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
