@@ -394,58 +394,49 @@
 <li>A higher-level layer intended for end-users for particularly useful cases and style preferences pre-defined (e.g. Create a choropleth).</li>
 </ul>
 <pre><code class="lang-python">%matplotlib inline
-<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
 <span class="hljs-keyword">import</span> mapclassify
 <span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
 <span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
-<span class="hljs-keyword">import</span> geoviews <span class="hljs-keyword">as</span> gv
-<span class="hljs-keyword">import</span> geoviews.feature <span class="hljs-keyword">as</span> gf
-<span class="hljs-keyword">import</span> xarray <span class="hljs-keyword">as</span> xr
-<span class="hljs-keyword">from</span> cartopy <span class="hljs-keyword">import</span> crs
-<span class="hljs-keyword">import</span> hvplot.pandas
 <span class="hljs-keyword">import</span> contextily <span class="hljs-keyword">as</span> cx
-<span class="hljs-keyword">import</span> pysal <span class="hljs-keyword">as</span> ps
-<span class="hljs-keyword">import</span> libpysal <span class="hljs-keyword">as</span> lp
-<span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rdm
-<span class="hljs-keyword">from</span> splot <span class="hljs-keyword">import</span> mapping <span class="hljs-keyword">as</span> maps
-<span class="hljs-keyword">from</span> pylab <span class="hljs-keyword">import</span> *
 </code></pre>
 <h3 id="lower-level-component">Lower-level component</h3>
 <p>This includes basic functionality to read spatial data from a file (currently only shapefiles supported) and produce rudimentary Matplotlib objects. The main methods are:</p>
 <ul>
-<li>map_poly_shape: to read in polygon shapefiles</li>
-<li>map_line_shape: to read in line shapefiles</li>
-<li>map_point_shape: to read in point shapefiles</li>
+<li>to read in polygon shapefiles</li>
+<li>to read in line shapefiles</li>
+<li>to read in point shapefiles</li>
 </ul>
-<p>These methods all support an option to subset the observations to be plotted (very useful when missing values are present). They can also be overlaid and combined by using the <code>setup_ax</code> function. the resulting object is very basic but also very flexible so, for minds used to matplotlib this should be good news as it allows to modify pretty much any property and attribute.</p>
 <h4 id="example">Example</h4>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
-cities = gpd.read_file(gpd.datasets.get_path(<span class="hljs-string">&apos;naturalearth_cities&apos;</span>))
-
-cities.hvplot(global_extent=<span class="hljs-keyword">True</span>, frame_height=<span class="hljs-number">450</span>, tiles=<span class="hljs-keyword">True</span>)
+<ul>
+<li>Let us see the columns in the shapefile </li>
+</ul>
+<pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>
+gdf = gpd.read_file(shp_link)
+gdf = gdf.to_crs(<span class="hljs-number">3857</span>)
+print(gdf.columns)
 </code></pre>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
-shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
-gdf_shp = gpd.read_file(shp_link)
-gdf_shp = gdf_shp.to_crs(<span class="hljs-number">3857</span>)
-some = [bool(rdm.getrandbits(<span class="hljs-number">1</span>)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> lps.io.open(shp_link)]
-
-fig = plt.figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
-
-base = gpd_shp.plot(linewidth=<span class="hljs-number">0.75</span>, edgecolor=<span class="hljs-number">0.</span>)
-base.set_facecolor(<span class="hljs-string">&apos;none&apos;</span>)
-some = gpd_shp.plot(linewidth=<span class="hljs-number">0.75</span>, edgecolor=<span class="hljs-number">0.</span>,  cmap=<span class="hljs-string">&apos;&apos;</span>)
-some.set_alpha(<span class="hljs-number">0.5</span>)
-cents = np.array([poly.centroid <span class="hljs-keyword">for</span> poly <span class="hljs-keyword">in</span> lps.io.open(shp_link)])
-pts = plt.scatter(cents[:, <span class="hljs-number">0</span>], cents[:, <span class="hljs-number">1</span>])
-pts.set_color(<span class="hljs-string">&apos;red&apos;</span>)
-
-ax = maps.setup_ax([base, some, pts], [shp.bbox, shp.bbox, shp.bbox])
-fig.add_axes(ax)
-plt.tight_layout()
+<ul>
+<li><p>An exploratory workflow uses <strong>mapclassify and geopandas</strong> to create different choropleth classifications and maps for quick exploratory data analysis.</p>
+</li>
+<li><p>The geoviews package can be used for interactive mapping in support of exploratory spatial data analysis.</p>
+</li>
+</ul>
+<pre><code class="lang-python">f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">8</span>))
+gdf.plot(column=<span class="hljs-string">&apos;HR60&apos;</span>, scheme=<span class="hljs-string">&apos;QUANTILES&apos;</span>, ax=ax,
+        edgecolor=<span class="hljs-string">&apos;white&apos;</span>, legend=<span class="hljs-keyword">True</span>, linewidth=<span class="hljs-number">0.3</span>)
+ax.set_axis_off()
 plt.show()
 </code></pre>
-<p><img src="02_geovisualization_files/02_geovisualization_6_0.png" alt="png"></p>
+<ul>
+<li>If you don&apos;t know a place extremely well it&apos;s often a good idea to add a basemap for context. We can do that easily using the contextily package</li>
+</ul>
+<pre><code class="lang-python">gdf.fillna(gdf.mean(), inplace = <span class="hljs-keyword">True</span>)
+f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">8</span>))
+gdf.plot(column=<span class="hljs-string">&apos;HR60&apos;</span>, scheme=<span class="hljs-string">&apos;QUANTILES&apos;</span>, alpha=<span class="hljs-number">0.6</span>, ax=ax, legend=<span class="hljs-keyword">True</span>)
+cx.add_basemap(ax, crs=gdf.crs.to_string(), source=cx.providers.Stamen.TonerLite)
+ax.set_axis_off()
+plt.show()
+</code></pre>
 <h3 id="medium-level-component">Medium-level component</h3>
 <p>This layer comprises functions that perform usual transformations on matplotlib objects, such as color coding objects (points, polygons, etc.) according to a series of values. This includes the following methods:</p>
 <ul>
@@ -458,10 +449,10 @@ plt.show()
 net = lp.io.open(net_link)
 values = np.array(ps.open(net_link.replace(<span class="hljs-string">&apos;.shp&apos;</span>, <span class="hljs-string">&apos;.dbf&apos;</span>)).by_col(<span class="hljs-string">&apos;TNODE&apos;</span>))
 
-pts_link = ps.examples.get_path(<span class="hljs-string">&apos;eberly_net_pts_onnetwork.shp&apos;</span>)
+pts_link = lps.io.examples.get_path(<span class="hljs-string">&apos;eberly_net_pts_onnetwork.shp&apos;</span>)
 pts = lp.io.open(pts_link)
 
-fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
+fig, ax = plt.figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
 
 netm = maps.map_line_shp(net)
 netc = maps.base_choropleth_unique(netm, values)
@@ -471,9 +462,8 @@ ptsm = maps.base_choropleth_classif(ptsm, values)
 ptsm.set_alpha(<span class="hljs-number">0.5</span>)
 ptsm.set_linewidth(<span class="hljs-number">0.</span>)
 
-ax = maps.setup_ax([netc, ptsm], [net.bbox, net.bbox])
 fig.add_axes(ax)
-show()
+plt.show()
 </code></pre>
 <p><img src="02_geovisualization_files/02_geovisualization_8_0.png" alt="png"></p>
 <pre><code class="lang-python">maps.plot_poly_lines(<span class="hljs-string">&apos;data/texas.shp&apos;</span>)
@@ -486,7 +476,7 @@ show()
 <li><code>plot_poly_lines</code>: very quick shapfile plotting</li>
 </ul>
 <pre><code class="lang-python">shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
-values = np.array(ps.open(<span class="hljs-string">&apos;../data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
+values = np.array(lps.io.open(<span class="hljs-string">&apos;../data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
 
 types = [<span class="hljs-string">&apos;classless&apos;</span>, <span class="hljs-string">&apos;unique_values&apos;</span>, <span class="hljs-string">&apos;quantiles&apos;</span>, <span class="hljs-string">&apos;equal_interval&apos;</span>, <span class="hljs-string">&apos;fisher_jenks&apos;</span>]
 <span class="hljs-keyword">for</span> typ <span class="hljs-keyword">in</span> types:
@@ -498,8 +488,10 @@ types = [<span class="hljs-string">&apos;classless&apos;</span>, <span class="hl
 <p><img src="02_geovisualization_files/02_geovisualization_11_3.png" alt="png"></p>
 <p><img src="02_geovisualization_files/02_geovisualization_11_4.png" alt="png"></p>
 <h3 id="pysal-map-classifiers">PySAL Map Classifiers</h3>
-<pre><code class="lang-python">hr90 = values
-hr90q5 = ps.Quantiles(hr90, k=<span class="hljs-number">5</span>)
+<pre><code class="lang-python">
+shp_link = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
+hr90 = np.array(lps.io.open(<span class="hljs-string">&apos;../data/texas.dbf&apos;</span>).by_col(<span class="hljs-string">&apos;HR90&apos;</span>))
+hr90q5 =mapclassify.Quantiles(hr90, k=<span class="hljs-number">5</span>)
 hr90q5
 </code></pre>
 <pre><code>               Quantiles                
@@ -511,7 +503,7 @@ Lower            Upper             Count
  5.652 &lt; x[i] &lt;=  8.510               50
  8.510 &lt; x[i] &lt;= 12.571               51
 12.571 &lt; x[i] &lt;= 43.516               51
-</code></pre><pre><code class="lang-python">hr90q4 = ps.Quantiles(hr90, k=<span class="hljs-number">4</span>)
+</code></pre><pre><code class="lang-python">hr90q4 = mapclassify.Quantiles(hr90, k=<span class="hljs-number">4</span>)
 hr90q4
 </code></pre>
 <pre><code>               Quantiles                
@@ -522,7 +514,7 @@ Lower            Upper             Count
  3.918 &lt; x[i] &lt;=  7.232               63
  7.232 &lt; x[i] &lt;= 11.414               63
 11.414 &lt; x[i] &lt;= 43.516               64
-</code></pre><pre><code class="lang-python">hr90e5 = ps.Equal_Interval(hr90, k=<span class="hljs-number">5</span>)
+</code></pre><pre><code class="lang-python">hr90e5 = mapclassify.EqualInterval(hr90, k=<span class="hljs-number">5</span>)
 hr90e5
 </code></pre>
 <pre><code>              Equal Interval             
@@ -534,10 +526,10 @@ Lower            Upper              Count
 17.406 &lt; x[i] &lt;= 26.110                16
 26.110 &lt; x[i] &lt;= 34.813                 2
 34.813 &lt; x[i] &lt;= 43.516                 3
-</code></pre><pre><code class="lang-python">hr90fj5 = ps.Fisher_Jenks(hr90, k=<span class="hljs-number">5</span>)
+</code></pre><pre><code class="lang-python">hr90fj5 = mapclassify.FisherJenks(hr90, k=<span class="hljs-number">5</span>) 
 hr90fj5
 </code></pre>
-<pre><code>               Fisher_Jenks              
+<pre><code>               FisherJenks              
 
 Lower            Upper              Count
 =========================================
@@ -567,14 +559,14 @@ shp_link = <span class="hljs-string">&quot;data/texas.shp&quot;</span>
 tx = gpd.read_file(shp_link)
 tx.plot(color=<span class="hljs-string">&apos;blue&apos;</span>)
 </code></pre>
-<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x11ceab6a0&gt;
+<pre><code>&lt;AxesSubplot:&gt;
 </code></pre><p><img src="02_geovisualization_files/02_geovisualization_23_1.png" alt="png"></p>
 <pre><code class="lang-python">type(tx)
 </code></pre>
 <pre><code>geopandas.geodataframe.GeoDataFrame
 </code></pre><pre><code class="lang-python">tx.plot(column=<span class="hljs-string">&apos;HR90&apos;</span>, scheme=<span class="hljs-string">&apos;QUANTILES&apos;</span>) <span class="hljs-comment"># uses pysal classifier under the hood</span>
 </code></pre>
-<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x11dcd85f8&gt;
+<pre><code>&lt;AxesSubplot:&gt;
 </code></pre><p><img src="02_geovisualization_files/02_geovisualization_25_1.png" alt="png"></p>
 <pre><code class="lang-python">tx.plot(column=<span class="hljs-string">&apos;HR90&apos;</span>, scheme=<span class="hljs-string">&apos;QUANTILES&apos;</span>, k=<span class="hljs-number">3</span>, cmap=<span class="hljs-string">&apos;OrRd&apos;</span>) <span class="hljs-comment"># we need a continuous color map</span>
 </code></pre>
@@ -634,11 +626,11 @@ tx.plot(column=<span class="hljs-string">&apos;HR90&apos;</span>, scheme=<span c
 ax.set_axis_off()
 plt.show()
 </code></pre>
-<pre><code>/Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/geopandas/geodataframe.py:447: UserWarning: Invalid k: 10 (2 &lt;= k &lt;= 9), setting k=5 (default)
+<pre><code>/Users/admin/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/geopandas/geodataframe.py:447: UserWarning: Invalid k: 10 (2 &lt;= k &lt;= 9), setting k=5 (default)
   return plot_dataframe(self, *args, **kwargs)
 </code></pre><p><img src="02_geovisualization_files/02_geovisualization_36_1.png" alt="png"></p>
 <pre><code class="lang-python"><span class="hljs-comment"># ok, let&apos;s work around to get deciles</span>
-q10 = ps.Quantiles(tx.HR90,k=<span class="hljs-number">10</span>)
+q10 = mapclassify.Quantiles(tx.HR90,k=<span class="hljs-number">10</span>)
 q10.bins
 </code></pre>
 <pre><code>array([  0.        ,   2.42057708,   4.59760916,   5.6524773 ,
@@ -666,7 +658,7 @@ ax.set_axis_off()
 plt.show()
 </code></pre>
 <p><img src="02_geovisualization_files/02_geovisualization_39_0.png" alt="png"></p>
-<pre><code class="lang-python">fj10 = ps.Fisher_Jenks(tx.HR90,k=<span class="hljs-number">10</span>)
+<pre><code class="lang-python">fj10 = mapclassify.FisherJenks(tx.HR90,k=<span class="hljs-number">10</span>)
 fj10.bins
 <span class="hljs-comment">#labels = [&quot;%0.1f&quot;%l for l in fj10.bins]</span>
 <span class="hljs-comment">#labels</span>
@@ -684,7 +676,7 @@ plt.show()
 </code></pre><pre><code class="lang-python">q10.adcm
 </code></pre>
 <pre><code>220.80434598560004
-</code></pre><pre><code class="lang-python">q5 = ps.Quantiles(tx.HR90,k=<span class="hljs-number">5</span>)
+</code></pre><pre><code class="lang-python">q5 = mapclassify.Quantiles(tx.HR90,k=<span class="hljs-number">5</span>)
 </code></pre>
 <pre><code class="lang-python">f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
 tx.assign(cl=q5.yb).plot(column=<span class="hljs-string">&apos;cl&apos;</span>, categorical=<span class="hljs-keyword">True</span>, \
@@ -698,14 +690,14 @@ plt.show()
 <p>In addition to using matplotlib, the viz module includes components that interface with the <a href="http://folium.readthedocs.io/en/latest/" target="_blank">folium</a> library which provides a Pythonic way to generate <a href="http://leafletjs.com/" target="_blank">Leaflet</a> maps.</p>
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> pysal <span class="hljs-keyword">as</span> ps
 <span class="hljs-keyword">import</span> geojson <span class="hljs-keyword">as</span> gj
-<span class="hljs-keyword">from</span> pysal.contrib.viz <span class="hljs-keyword">import</span> folium_mapping <span class="hljs-keyword">as</span> fm
+<span class="hljs-keyword">import</span> folium <span class="hljs-keyword">as</span> fm
 </code></pre>
 <p>First, we need to convert the data into a JSON format. JSON, short for &quot;Javascript Serialized Object Notation,&quot; is a simple and effective way to represent objects in a digital environment. For geographic information, the <a href="https://geojson.org" target="_blank">GeoJSON</a> standard defines how to represent geographic information in JSON format. Python programmers may be more comfortable thinking of JSON data as something akin to a standard Python dictionary. </p>
 <pre><code class="lang-python">filepath = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>[:<span class="hljs-number">-4</span>]
-shp = ps.open(filepath + <span class="hljs-string">&apos;.shp&apos;</span>)
-dbf = ps.open(filepath + <span class="hljs-string">&apos;.dbf&apos;</span>)
+shp = lps.io.open(filepath + <span class="hljs-string">&apos;.shp&apos;</span>)
+dbf = lps.io.open(filepath + <span class="hljs-string">&apos;.dbf&apos;</span>)
 </code></pre>
-<pre><code class="lang-python">js = fm.build_features(shp, dbf)
+<pre><code class="lang-python">js = fm.features(shp, dbf)
 </code></pre>
 <p>Just to show, this constructs a dictionary with the following keys:</p>
 <pre><code class="lang-python">js.keys()
@@ -1055,7 +1047,7 @@ in addition to showing the Homicide rate, the rank of that rate is also shown.</
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-16T13:27:20.586Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-16T13:29:02.530Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Geovisualization","level":"1.7.2","depth":2,"next":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"previous":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/02_geovisualization.md","mtime":"2021-03-16T19:47:33.111Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-17T05:30:17.299Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
