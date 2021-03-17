@@ -359,7 +359,7 @@ tx.plot(column='HR90', scheme='QUANTILES') # uses pysal classifier under the hoo
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x11dcd85f8>
+    <AxesSubplot:>
 
 
 
@@ -541,7 +541,7 @@ plt.show()
 
 ```python
 # ok, let's work around to get deciles
-q10 = ps.Quantiles(tx.HR90,k=10)
+q10 = mapclassify.Quantiles(tx.HR90,k=10)
 q10.bins
 ```
 
@@ -593,7 +593,7 @@ plt.show()
 
 
 ```python
-fj10 = ps.Fisher_Jenks(tx.HR90,k=10)
+fj10 = mapclassify.FisherJenks(tx.HR90,k=10)
 fj10.bins
 #labels = ["%0.1f"%l for l in fj10.bins]
 #labels
@@ -635,7 +635,7 @@ q10.adcm
 
 
 ```python
-q5 = ps.Quantiles(tx.HR90,k=5)
+q5 = mapclassify.Quantiles(tx.HR90,k=5)
 
 ```
 
@@ -662,7 +662,7 @@ In addition to using matplotlib, the viz module includes components that interfa
 ```python
 import pysal as ps
 import geojson as gj
-from pysal.contrib.viz import folium_mapping as fm
+import folium as fm
 ```
 
 First, we need to convert the data into a JSON format. JSON, short for "Javascript Serialized Object Notation," is a simple and effective way to represent objects in a digital environment. For geographic information, the [GeoJSON](https://geojson.org) standard defines how to represent geographic information in JSON format. Python programmers may be more comfortable thinking of JSON data as something akin to a standard Python dictionary. 
@@ -670,13 +670,13 @@ First, we need to convert the data into a JSON format. JSON, short for "Javascri
 
 ```python
 filepath = '../data/texas.shp'[:-4]
-shp = ps.open(filepath + '.shp')
-dbf = ps.open(filepath + '.dbf')
+shp = lps.io.open(filepath + '.shp')
+dbf = lps.io.open(filepath + '.dbf')
 ```
 
 
 ```python
-js = fm.build_features(shp, dbf)
+js = fm.features(shp, dbf)
 ```
 
 Just to show, this constructs a dictionary with the following keys:
