@@ -35,6 +35,7 @@ The  mapping module in PySAL is organized around three main layers:
 import mapclassify
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import contextily as cx
 ```
 
@@ -48,7 +49,27 @@ This includes basic functionality to read spatial data from a file (currently on
 
 #### Example
 
-* Let us see the columns in the shapefile 
+
+```python
+shp_link = 'data/texas.shp'
+shp = gpd.read_file(shp_link)
+some = [bool(rdm.getrandbits(1)) for i in lps.io.open(shp_link)]
+
+fig, ax = plt.subplots(1, figsize=(9,9))
+
+shp.plot(facecolor=None, linewidth=0.75, edgecolor='red',ax=ax,)
+shp.plot(categorical=some,alpha=0.5,linewidth=0,ax=ax)
+cents = np.array([poly.centroid for poly in lps.io.open(shp_link)])
+pts = sns.scatterplot(x=cents[:, 0], y=cents[:, 1],ax=ax,color='red')
+plt.tight_layout()
+plt.show()
+```
+
+
+![png](02_geovisualization_files/02_geovisualization_6_0.png)
+
+
+* We can access the columns in the shapefile:
 
 ```python
 shp_link = '../data/texas.shp'
@@ -97,24 +118,21 @@ This layer comprises functions that perform usual transformations on matplotlib 
 
 
 ```python
-net_link = lp.io.examples.get_path('eberly_net.shp')
-net = lp.io.open(net_link)
-values = np.array(ps.open(net_link.replace('.shp', '.dbf')).by_col('TNODE'))
+net_link = lps.examples.get_path('eberly_net.shp')
+net = lps.io.open(net_link)
+values = np.array(lps.io.open(net_link.replace('.shp', '.dbf')).by_col('TNODE'))
 
-pts_link = lps.io.examples.get_path('eberly_net_pts_onnetwork.shp')
-pts = lp.io.open(pts_link)
+pts_link = lps.examples.get_path('eberly_net_pts_onnetwork.shp')
 
-fig, ax = plt.figure(figsize=(9,9))
+fig, ax = plt.subplots(1,figsize=(9,9))
 
-netm = maps.map_line_shp(net)
-netc = maps.base_choropleth_unique(netm, values)
 
-ptsm = maps.map_point_shp(pts)
-ptsm = maps.base_choropleth_classif(ptsm, values)
-ptsm.set_alpha(0.5)
-ptsm.set_linewidth(0.)
+netm = gpd.read_file(net_link)
+netc =gpd.read_file(pts_link)
+netm.plot(column='TNODE',scheme='quantiles',ax=ax,cmap='OrRd')
+netc.plot(column='variable',ax=ax,alpha=0.5,linewidth=0.)
 
-fig.add_axes(ax)
+ax.set_axis_off()
 plt.show()
 ```
 
@@ -123,15 +141,6 @@ plt.show()
 
 
 
-```python
-maps.plot_poly_lines('data/texas.shp')
-```
-
-    callng plt.show()
-
-
-
-![png](02_geovisualization_files/02_geovisualization_9_1.png)
 
 
 ### Higher-level component
@@ -143,11 +152,19 @@ This currently includes the following end-user functions:
 
 ```python
 shp_link = 'data/texas.shp'
-values = np.array(lps.io.open('../data/texas.dbf').by_col('HR90'))
-
-types = ['classless', 'unique_values', 'quantiles', 'equal_interval', 'fisher_jenks']
+texas = gpd.read_file('data/texas.shp')
+values = np.array(lps.io.open('data/texas.dbf').by_col('HR90'))
+q10 = mc.Quantiles(texas.HR90, k=10)
+types = ['BoxPlot', 'EqualInterval', 'FisherJenks', 'FisherJenksSampled',
+    'HeadTailBreaks', 'JenksCaspall', 'JenksCaspallForced',
+    'JenksCaspallSampled', 'MaxP', 'MaximumBreaks',
+    'NaturalBreaks', 'Quantiles', 'Percentiles', 'StdMean']
+f, ax = plt.subplots(1, figsize=(16, 9))
 for typ in types:
-    maps.plot_choropleth(shp_link, values, typ, title=typ)
+    texas.assign(cl=values).plot(column='HR90',scheme=typ,legend=True,
+                          legend_kwds={'loc': 'lower right'})
+ax.set_axis_off()
+plt.show()
 ```
 
 
