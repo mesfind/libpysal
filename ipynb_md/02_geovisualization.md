@@ -918,7 +918,7 @@ HR90 = values
 
 
 ```python
-bins_q5 = ps.Quantiles(HR90, k=5)
+bins_q5 = mapclassify.Quantiles(HR90, k=5)
 ```
 
 
@@ -1177,4 +1177,4 @@ show(p)
 
 1. Using Bokeh, use PySALs Fisher Jenks classifier with k=10 to generate a choropleth map of the homicide rates in 1990 for Texas counties. Modify the hover tooltips so that
 in addition to showing the Homicide rate, the rank of that rate is also shown.
-2. Explore `ps.esda.mapclassify.` (hint: use tab completion) to select a new classifier (different from the ones in this notebook). Using the same data as in exercise 1, apply this classifier and create a choropleth using Bokeh.
+2. Explore `mapclassify.` (hint: use tab completion) to select a new classifier (different from the ones in this notebook). Using the same data as in exercise 1, apply this classifier and create a choropleth using Bokeh.
