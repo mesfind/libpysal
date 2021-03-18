@@ -567,19 +567,19 @@ plt.show()
 <h3 id="spatial-similarity">Spatial Similarity</h3>
 <p>We have already encountered spatial weights in a previous notebook. In spatial autocorrelation analysis, the spatial weights are used to formalize the notion of spatial similarity. As we have seen there are many ways to define spatial weights, here we will use queen contiguity:</p>
 <pre><code class="lang-python">
-data = gpd.read_file(&quot;data/texas.shp&quot;)
-W = Queen(&quot;data/texas.shp&quot;)
-W.transform = &apos;r&apos;???
+gpd_shp = gpd.read_file(<span class="hljs-string">&quot;data/texas.shp&quot;</span>)
+qW = Queen.from_dataframe(gpd_shp)
+qW.transform = <span class="hljs-string">&apos;r&apos;</span>
 </code></pre>
 <h3 id="attribute-similarity">Attribute Similarity</h3>
 <p>So the spatial weight between counties $i$ and $j$ indicates if the two counties are neighbors (i.e., geographically similar). What we also need is a measure of attribute similarity to pair up with this concept of spatial similarity.
 The <strong>spatial lag</strong> is a derived variable that accomplishes this for us. For county $i$ the spatial lag is defined as:
 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>H</mi><mi>R</mi><mn>9</mn><mn>0</mn><mi>L</mi><mi>a</mi><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><msub><mo>&#x2211;</mo><mi>j</mi></msub><msub><mi>w</mi><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mi>H</mi><mi>R</mi><mn>9</mn><msub><mn>0</mn><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">HR90Lag_i = \sum_j w_{i,j} HR90_j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.186118em;vertical-align:-0.436118em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mord mathrm">9</span><span class="mord mathrm">0</span><span class="mord mathit">L</span><span class="mord mathit">a</span><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span>&#x200B;</span></span></span><span class="mrel">=</span><span class="mop"><span class="op-symbol small-op mop" style="top:-0.0000050000000000050004em;">&#x2211;</span><span class="vlist"><span style="top:0.30001em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span>&#x200B;</span></span></span><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span>&#x200B;</span></span></span><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mord mathrm">9</span><span class="mord"><span class="mord mathrm">0</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">&#x200B;</span></span>&#x200B;</span></span></span></span></span></span></p>
-<pre><code class="lang-python">HR90Lag = ps.lag_spatial(W, data.HR90)
+<pre><code class="lang-python">HR90Lag = lps.weights.lag_spatial(qW, gpd_shp.HR90)
 </code></pre>
-<pre><code class="lang-python">HR90LagQ10 = ps.Quantiles(HR90Lag, k=<span class="hljs-number">10</span>)
+<pre><code class="lang-python">HR90LagQ10 = mc.Quantiles(HR90Lag, k=<span class="hljs-number">10</span>)
 </code></pre>
-<pre><code class="lang-python">f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
+<pre><code class="lang-python">fig, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
 tx.assign(cl=HR90LagQ10.yb).plot(column=<span class="hljs-string">&apos;cl&apos;</span>, categorical=<span class="hljs-keyword">True</span>, \
         k=<span class="hljs-number">10</span>, cmap=<span class="hljs-string">&apos;OrRd&apos;</span>, linewidth=<span class="hljs-number">0.1</span>, ax=ax, \
         edgecolor=<span class="hljs-string">&apos;white&apos;</span>, legend=<span class="hljs-keyword">True</span>)
@@ -591,10 +591,10 @@ plt.show()
 <p><img src="04_esda_files/04_esda_12_0.png" alt="png"></p>
 <p>The decile map for the spatial lag tends to enhance the impression of value similarity in space. However, we still have the challenge of visually associating the value of the homicide rate in a county with the value of the spatial lag of rates for the county. The latter is a weighted average of homicide rates in the focal county&apos;s neighborhood.</p>
 <p>To complement the geovisualization of these associations we can turn to formal statistical measures of spatial autocorrelation.</p>
-<pre><code class="lang-python">HR90 = data.HR90
+<pre><code class="lang-python">HR90 = gpd_shp.HR90
 b,a = np.polyfit(HR90, HR90Lag, <span class="hljs-number">1</span>)
 </code></pre>
-<pre><code class="lang-python">f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
+<pre><code class="lang-python">fig, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
 
 plt.plot(HR90, HR90Lag, <span class="hljs-string">&apos;.&apos;</span>, color=<span class="hljs-string">&apos;firebrick&apos;</span>)
 
@@ -613,7 +613,8 @@ plt.show()
 <p><img src="04_esda_files/04_esda_15_0.png" alt="png"></p>
 <h2 id="global-spatial-autocorrelation">Global Spatial Autocorrelation</h2>
 <p>In PySAL, commonly-used analysis methods are very easy to access. For example, if we were interested in examining the spatial dependence in <code>HR90</code> we could quickly compute a Moran&apos;s $I$ statistic:</p>
-<pre><code class="lang-python">I_HR90 = ps.Moran(data.HR90.values, W)
+<pre><code class="lang-python"><span class="hljs-keyword">from</span> esda.moran <span class="hljs-keyword">import</span> Moran
+I_HR90 = Moran(gpd_shp.HR90.values, qW)
 </code></pre>
 <pre><code class="lang-python">I_HR90.I, I_HR90.p_sim
 </code></pre>
@@ -636,12 +637,8 @@ plt.vlines(I_HR90.sim, <span class="hljs-number">0</span>, <span class="hljs-num
 plt.vlines(I_HR90.I, <span class="hljs-number">0</span>, <span class="hljs-number">10</span>, <span class="hljs-string">&apos;r&apos;</span>)
 plt.xlim([<span class="hljs-number">-0.15</span>, <span class="hljs-number">0.15</span>])
 </code></pre>
-<pre><code>/home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-  y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
-
-
-
-
+<pre><code>&lt;IPython.core.display.Javascript object&gt;
+Out[333]: 
 
 (-0.15, 0.15)
 </code></pre><p><img src="04_esda_files/04_esda_26_2.png" alt="png"></p>
@@ -651,20 +648,17 @@ plt.vlines(I_HR90.sim, <span class="hljs-number">0</span>, <span class="hljs-num
 plt.vlines(I_HR90.EI+<span class="hljs-number">.01</span>, <span class="hljs-number">0</span>, <span class="hljs-number">10</span>, <span class="hljs-string">&apos;r&apos;</span>)
 plt.xlim([<span class="hljs-number">-0.15</span>, <span class="hljs-number">0.15</span>])
 </code></pre>
-<pre><code>/home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-  y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+<pre><code>&lt;IPython.core.display.Javascript object&gt;
+ Out[335]: 
 
-
-
-
-
-(-0.15, 0.15)
+ (-0.15, 0.15)
 </code></pre><p><img src="04_esda_files/04_esda_28_2.png" alt="png"></p>
 <p>The result of applying Moran&apos;s I is that we conclude the map pattern is not spatially random, but instead there is a signficant spatial association in homicide rates in Texas counties in 1990.</p>
 <p>This result applies to the map as a whole, and is sometimes referred to as &quot;global spatial autocorrelation&quot;. Next we turn to a local analysis where the attention shifts to detection of hot spots, cold spots and spatial outliers.</p>
 <h2 id="local-autocorrelation-statistics">Local Autocorrelation Statistics</h2>
 <p>In addition to the Global autocorrelation statistics, PySAL has many local autocorrelation statistics. Let&apos;s compute a local Moran statistic for the same data shown above:</p>
-<pre><code class="lang-python">LMo_HR90 = ps.Moran_Local(data.HR90.values, W)
+<pre><code class="lang-python"><span class="hljs-keyword">from</span> esda.moran <span class="hljs-keyword">import</span> Moran_Local
+LMo_HR90 = Moran_Local(gpd_shp.HR90.values, qW)
 </code></pre>
 <p>Now, instead of a single $I$ statistic, we have an <em>array</em> of local $I_i$ statistics, stored in the <code>.Is</code> attribute, and p-values from the simulation are in <code>p_sim</code>. </p>
 <pre><code class="lang-python">LMo_HR90.Is[<span class="hljs-number">0</span>:<span class="hljs-number">10</span>], LMo_HR90.p_sim[<span class="hljs-number">0</span>:<span class="hljs-number">10</span>]
@@ -674,13 +668,13 @@ plt.xlim([<span class="hljs-number">-0.15</span>, <span class="hljs-number">0.15
  array([ 0.013,  0.169,  0.037,  0.015,  0.002,  0.009,  0.053,  0.063,
          0.489,  0.119]))
 </code></pre><p>We can adjust the number of permutations used to derive every <em>pseudo</em>-$p$ value by passing a different <code>permutations</code> argument:</p>
-<pre><code class="lang-python">LMo_HR90 = ps.Moran_Local(data.HR90.values, W, permutations=<span class="hljs-number">9999</span>)
+<pre><code class="lang-python">LMo_HR90 = Moran_Local(gpd_shp.HR90.values, qW, permutations=<span class="hljs-number">9999</span>)
 </code></pre>
 <p>In addition to the typical clustermap, a helpful visualization for LISA statistics is a Moran scatterplot with statistically significant LISA values highlighted. </p>
 <p>This is very simple, if we use the same strategy we used before:</p>
 <p>First, construct the spatial lag of the covariate:</p>
-<pre><code class="lang-python">Lag_HR90 = ps.lag_spatial(W, data.HR90.values)
-HR90 = data.HR90.values
+<pre><code class="lang-python">Lag_HR90 = lps.weights.lag_spatial(qW, gpd_shp.HR90.values)
+HR90 = gpd_shp.HR90.values
 </code></pre>
 <p>Then, we want to plot the statistically-significant LISA values in a different color than the others. To do this, first find all of the statistically significant LISAs. Since the $p$-values are in the same order as the $I_i$ statistics, we can do this in the following way</p>
 <pre><code class="lang-python">sigs = HR90[LMo_HR90.p_sim &lt;= <span class="hljs-number">.001</span>]
@@ -705,26 +699,26 @@ plt.text(s=<span class="hljs-string">&apos;$I = %.3f$&apos;</span> % I_HR90.I, x
 plt.title(<span class="hljs-string">&apos;Moran Scatterplot&apos;</span>)
 plt.ylabel(<span class="hljs-string">&apos;Spatial Lag of HR90&apos;</span>)
 plt.xlabel(<span class="hljs-string">&apos;HR90&apos;</span>)
+plt.show()
 </code></pre>
-<pre><code>&lt;matplotlib.text.Text at 0x7fd6cf324d30&gt;
-</code></pre><p><img src="04_esda_files/04_esda_44_1.png" alt="png"></p>
+<p><img src="04_esda_files/04_esda_44_1.png" alt="png"></p>
 <p>We can also make a LISA map of the data. </p>
 <pre><code class="lang-python">sig = LMo_HR90.p_sim &lt; <span class="hljs-number">0.05</span>
 </code></pre>
 <pre><code class="lang-python">sig.sum()
 </code></pre>
-<pre><code>44
+<pre><code>42
 </code></pre><pre><code class="lang-python">hotspots = LMo_HR90.q==<span class="hljs-number">1</span> * sig
 </code></pre>
 <pre><code class="lang-python">hotspots.sum()
 </code></pre>
-<pre><code>10
+<pre><code>9
 </code></pre><pre><code class="lang-python">coldspots = LMo_HR90.q==<span class="hljs-number">3</span> * sig
 </code></pre>
 <pre><code class="lang-python">coldspots.sum()
 </code></pre>
-<pre><code>17
-</code></pre><pre><code class="lang-python">data.HR90[hotspots]
+<pre><code>16
+</code></pre><pre><code class="lang-python">gpd_shp.HR90[hotspots]
 </code></pre>
 <pre><code>98      9.784698
 132    11.435106
@@ -737,7 +731,7 @@ plt.xlabel(<span class="hljs-string">&apos;HR90&apos;</span>)
 239     9.256549
 242    18.062652
 Name: HR90, dtype: float64
-</code></pre><pre><code class="lang-python">data[hotspots]
+</code></pre><pre><code class="lang-python">gpd_shp[hotspots]
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -1026,7 +1020,7 @@ ax.set_axis_off()
 plt.show()
 </code></pre>
 <p><img src="04_esda_files/04_esda_54_0.png" alt="png"></p>
-<pre><code class="lang-python">data.HR90[coldspots]
+<pre><code class="lang-python">gpd_shp.HR90[coldspots]
 </code></pre>
 <pre><code>0      0.000000
 3      0.000000
@@ -1068,33 +1062,29 @@ plt.show()
 <p><img src="04_esda_files/04_esda_57_0.png" alt="png"></p>
 <pre><code class="lang-python">sns.kdeplot(data.HR90)
 </code></pre>
-<pre><code>/home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-  y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
-
-
-
-
-
-&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fd6ccc17358&gt;
+<pre><code>Out[357]: &lt;AxesSubplot:xlabel=&apos;HR90&apos;, ylabel=&apos;Density&apos;&gt;
 </code></pre><p><img src="04_esda_files/04_esda_58_2.png" alt="png"></p>
 <pre><code class="lang-python">sns.kdeplot(data.HR90)
 sns.kdeplot(data.HR80)
 sns.kdeplot(data.HR70)
 sns.kdeplot(data.HR60)
 </code></pre>
-<pre><code>/home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-  y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+<p>   <ipython.core.display.javascript object="">
+   <ipython.core.display.javascript object="">
+   <ipython.core.display.javascript object="">
+   <ipython.core.display.javascript object=""></ipython.core.display.javascript></ipython.core.display.javascript></ipython.core.display.javascript></ipython.core.display.javascript></p>
+  <axessubplot:xlabel='hr90', ylabel="Density">
 
 
 
 
 
-&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fd6da838908&gt;
-</code></pre><p><img src="04_esda_files/04_esda_59_2.png" alt="png"></p>
-<pre><code class="lang-python">data.HR90.mean()
+
+<p><img src="04_esda_files/04_esda_59_2.png" alt="png"></p>
+<pre><code class="lang-python">gpd_shp.HR90.mean()
 </code></pre>
 <pre><code>8.302494460285041
-</code></pre><pre><code class="lang-python">data.HR90.median()
+</code></pre><pre><code class="lang-python">gpd_shp.HR90.median()
 </code></pre>
 <pre><code>7.23234613355
 </code></pre><h2 id="exercises">Exercises</h2>
@@ -1103,7 +1093,7 @@ sns.kdeplot(data.HR60)
 <li>The local analysis can also be repeated for the other decades. How many counties are hot spots in each of the periods?</li>
 <li>The recent <a href="http://www.bbc.com/news/uk-politics-32810887" target="_blank">Brexit vote</a> provides a timely example where local spatial autocorrelation analysis can provide interesting insights.  One <a href="https://gist.github.com/darribas/691ad184280590d1219ffcf9a1678030" target="_blank">local analysis of the vote to leave</a> has recently been repored. Extend this to do an analysis of the attribute <code>Pct_remain</code>. Do the hot spots for the leave vote concord with the cold spots for the remain vote?</li>
 </ol>
-
+</axessubplot:xlabel='hr90',>
                                 
                                 </section>
                             
@@ -1146,7 +1136,7 @@ sns.kdeplot(data.HR60)
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"next":{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]},"previous":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/04_esda.md","mtime":"2021-03-18T14:43:41.856Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T15:09:42.623Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"next":{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]},"previous":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/04_esda.md","mtime":"2021-03-18T15:38:32.776Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T15:39:32.642Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
