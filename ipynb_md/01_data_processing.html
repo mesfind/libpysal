@@ -2988,14 +2988,10 @@ TypeError: __call__() takes 2 positional arguments but 3 were given
       dtype=&apos;&lt;U13&apos;)
 </code></pre><p>Note that the numerical columns, <code>HR90</code> &amp; <code>HR80</code> are now considered strings, since they show up with the single tickmarks around them, like <code>&apos;0.0&apos;</code>.</p>
 <p>These methods work similarly for <code>.csv</code> files as well.</p>
-<h3 id="using-pandas-with-pysal">Using Pandas with PySAL</h3>
-<p>A new functionality added to PySAL recently allows you to work with shapefile/dbf pairs using Pandas. This <em>optional</em> extension is only turned on if you have Pandas installed. The extension is the <code>ps.pdio</code> module:</p>
-<pre><code class="lang-python">ps.pdio
-</code></pre>
-<pre><code>&lt;module &apos;pysal.contrib.pdutilities&apos; from &apos;/Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/pysal/contrib/pdutilities/__init__.py&apos;&gt;
-</code></pre><p>To use it, you can read in shapefile/dbf pairs using the <code>ps.pdio.read_files</code> command. </p>
-<pre><code class="lang-python">shp_path = ps.examples.get_path(<span class="hljs-string">&apos;NAT.shp&apos;</span>)
-data_table = ps.pdio.read_files(shp_path)
+<h3 id="using-geopandas-with-pysal">Using GeoPandas with PySAL</h3>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> pd
+shp_path = lps.examples.get_path(<span class="hljs-string">&apos;NAT.shp&apos;</span>)
+data_table = gpd.read_file(shp_path)
 </code></pre>
 <p>This reads in <em>the entire database table</em> and adds a column to the end, called <code>geometry</code>, that stores the geometries read in from the shapefile. </p>
 <p>Now, you can work with it like a standard pandas dataframe.</p>
@@ -3158,8 +3154,8 @@ data_table = ps.pdio.read_files(shp_path)
 
 
 <p>The <code>read_files</code> function only works on shapefile/dbf pairs. If you need to read in data using CSVs, use pandas directly:</p>
-<pre><code class="lang-python">usjoin = pd.read_csv(csv_path)
-<span class="hljs-comment">#usjoin = ps.pdio.read_files(csv_path) #will not work, not a shp/dbf pair</span>
+<pre><code class="lang-python">csv_path = lps.examples.get_path(<span class="hljs-string">&apos;usjoin.csv&apos;</span>)
+usjoin = pd.read_csv(csv_path)
 </code></pre>
 <pre><code class="lang-python">usjoin.head()
 </code></pre>
@@ -5249,7 +5245,7 @@ HRs
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"next":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"previous":{"title":"Part I","level":"1.7","depth":1,"path":"content/part1/README.md","ref":"content/part1/README.md","articles":[{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/01_data_processing.md","mtime":"2021-03-17T14:32:25.297Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T14:43:10.795Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"next":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"previous":{"title":"Part I","level":"1.7","depth":1,"path":"content/part1/README.md","ref":"content/part1/README.md","articles":[{"title":"Spatial data processing with PySAL","level":"1.7.1","depth":2,"path":"ipynb_md/01_data_processing.md","ref":"ipynb_md/01_data_processing.md","articles":[]},{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/01_data_processing.md","mtime":"2021-03-18T15:05:11.750Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T15:09:42.623Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
