@@ -8,6 +8,7 @@
 import matplotlib
 import numpy as np
 import pysal as ps
+import libpysal as lps
 import matplotlib.pyplot as plt
 %matplotlib inline
 
@@ -15,7 +16,7 @@ import matplotlib.pyplot as plt
 
 
 ```python
-f = ps.open(ps.examples.get_path('usjoin.csv'), 'r')
+f = lps.io.open(lps.examples.get_path('usjoin.csv'), 'r')
 ```
 
 To determine what is in the file, check the `header` attribute on the file object:
@@ -218,7 +219,7 @@ plt.plot(years,Y[0])
 
 
 
-    [<matplotlib.lines.Line2D at 0x110ba1a58>]
+    [<matplotlib.lines.Line2D at 0x7f9fd168c470>]
 
 
 
@@ -239,7 +240,7 @@ plt.plot(years,RY[0])
 
 
 
-    [<matplotlib.lines.Line2D at 0x113575e10>]
+    [<matplotlib.lines.Line2D at 0x7f9fd16a10f0>]
 
 
 
@@ -274,7 +275,7 @@ plt.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x1137d9eb8>
+    <matplotlib.legend.Legend at 0x7f9fd16af9b0>
 
 
 
@@ -450,10 +451,6 @@ for y in range(2010-1929):
 
 ```
 
-    /Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
-
-
 
 ![png](05_spatial_dynamics_files/05_spatial_dynamics_48_1.png)
 
@@ -465,8 +462,7 @@ for y in range(2010-1929):
     sns.kdeplot(RY[:,y])
 ```
 
-    /Users/dani/anaconda/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+   
 
 
 
@@ -550,7 +546,8 @@ c
 
 
 ```python
-m = ps.Markov(c)
+from giddy.markov import Markov
+m = Markov(c)
 ```
 
 
@@ -598,7 +595,7 @@ m.p
 
 
 ```python
-ps.examples.explain('us_income')
+lps.examples.explain('us_income')
 ```
 
 
@@ -615,8 +612,8 @@ ps.examples.explain('us_income')
 
 
 ```python
-data = ps.pdio.read_files(ps.examples.get_path("us48.dbf"))
-W = ps.queen_from_shapefile(ps.examples.get_path("us48.shp"))
+data = gpd.read_file(lps.examples.get_path("us48.dbf"))
+W = Queen.from_shapefile(lps.examples.get_path("us48.shp"))
 W.transform = 'r'
 ```
 
@@ -682,7 +679,7 @@ data.STATE_NAME
 
 
 ```python
-f = ps.open(ps.examples.get_path("usjoin.csv"))
+f = lps.io.open(lps.examples.get_path("usjoin.csv"))
 pci = np.array([f.by_col[str(y)] for y in range(1929,2010)])
 pci.shape
 ```
@@ -765,9 +762,9 @@ RY = RY[ids]
 import matplotlib.pyplot as plt
 
 import geopandas as gpd
-shp_link = ps.examples.get_path('us48.shp')
+shp_link = lps.examples.get_path('us48.shp')
 tx = gpd.read_file(shp_link)
-pci29 = ps.Quantiles(pci[:,0], k=5)
+pci29 = mc.Quantiles(pci[:,0], k=5)
 f, ax = plt.subplots(1, figsize=(10, 5))
 tx.assign(cl=pci29.yb+1).plot(column='cl', categorical=True, \
         k=5, cmap='Greens', linewidth=0.1, ax=ax, \
@@ -784,7 +781,7 @@ plt.show()
 
 
 ```python
-pci2009 = ps.Quantiles(pci[:,-1], k=5)
+pci2009 = mc.Quantiles(pci[:,-1], k=5)
 f, ax = plt.subplots(1, figsize=(10, 5))
 tx.assign(cl=pci2009.yb+1).plot(column='cl', categorical=True, \
         k=5, cmap='Greens', linewidth=0.1, ax=ax, \
@@ -814,7 +811,7 @@ Put series into cross-sectional quintiles (i.e., quintiles for each year).
 
 
 ```python
-q5 = np.array([ps.Quantiles(y).yb for y in pci.T]).transpose()
+q5 = np.array([mc.Quantiles(y).yb for y in pci.T]).transpose()
 ```
 
 
@@ -879,7 +876,8 @@ we are looping over the rows of y which is ordered $T \times n$ (rows are cross 
 
 
 ```python
-m5 = ps.Markov(q5)
+from giddy.markov import Markov
+m5 = Markov(q5)
 ```
 
 
@@ -945,7 +943,8 @@ m5.steady_state #steady state distribution
 
 
 ```python
-fmpt = ps.ergodic.fmpt(m5.p) #first mean passage time
+from giddy import ergodic
+fmpt = ergodic.fmpt(m5.p) #first mean passage time
 fmpt
 ```
 
@@ -970,12 +969,13 @@ Create a queen contiguity matrix that is row standardized
 
 
 ```python
-w = ps.queen_from_shapefile(ps.examples.get_path('us48.shp'))
+w = Queen.from_shapefile(lps.examples.get_path('us48.shp'))
 w.transform = 'R'
 ```
 
 
 ```python
+from esda.moran import Moran
 mits = [ps.Moran(cs, w) for cs in RY.T]
 ```
 
@@ -1071,7 +1071,8 @@ rpci[:,0].mean()
 
 
 ```python
-sm = ps.Spatial_Markov(rpci, W, fixed=True, k=5)
+from giddy.markov import Spatial_Markov
+sm = Spatial_Markov(rpci, W, fixed=True, k=5)
 ```
 
 
