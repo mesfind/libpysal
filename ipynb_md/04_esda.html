@@ -379,11 +379,12 @@
 <span class="hljs-keyword">import</span> pysal <span class="hljs-keyword">as</span> ps
 <span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
 <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
-<span class="hljs-keyword">from</span> pysal.contrib.viz <span class="hljs-keyword">import</span> mapping <span class="hljs-keyword">as</span> maps
+<span class="hljs-keyword">import</span> mapclassify <span class="hljs-keyword">as</span> mc
+<span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
 </code></pre>
 <p>A well-used functionality in PySAL is the use of PySAL to conduct exploratory spatial data analysis. This notebook will provide an overview of ways to conduct exploratory spatial analysis in Python. </p>
 <p>First, let&apos;s read in some data:</p>
-<pre><code class="lang-python">data = ps.pdio.read_files(<span class="hljs-string">&quot;../data/texas.shp&quot;</span>)
+<pre><code class="lang-python">data = gpd.read_file(<span class="hljs-string">&quot;data/texas.shp&quot;</span>)
 </code></pre>
 <pre><code class="lang-python">data.head()
 </code></pre>
@@ -545,11 +546,10 @@
 
 
 <pre><code class="lang-python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
-
 <span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
-shp_link = <span class="hljs-string">&quot;../data/texas.shp&quot;</span>
+shp_link = <span class="hljs-string">&quot;data/texas.shp&quot;</span>
 tx = gpd.read_file(shp_link)
-hr10 = ps.Quantiles(data.HR90, k=<span class="hljs-number">10</span>)
+hr10 = mc.Quantiles(data.HR90, k=<span class="hljs-number">10</span>)
 f, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">9</span>, <span class="hljs-number">9</span>))
 tx.assign(cl=hr10.yb).plot(column=<span class="hljs-string">&apos;cl&apos;</span>, categorical=<span class="hljs-keyword">True</span>, \
         k=<span class="hljs-number">10</span>, cmap=<span class="hljs-string">&apos;OrRd&apos;</span>, linewidth=<span class="hljs-number">0.1</span>, ax=ax, \
@@ -567,9 +567,9 @@ plt.show()
 <h3 id="spatial-similarity">Spatial Similarity</h3>
 <p>We have already encountered spatial weights in a previous notebook. In spatial autocorrelation analysis, the spatial weights are used to formalize the notion of spatial similarity. As we have seen there are many ways to define spatial weights, here we will use queen contiguity:</p>
 <pre><code class="lang-python">
-data = ps.pdio.read_files(<span class="hljs-string">&quot;../data/texas.shp&quot;</span>)
-W = ps.queen_from_shapefile(<span class="hljs-string">&quot;../data/texas.shp&quot;</span>)
-W.transform = <span class="hljs-string">&apos;r&apos;</span>
+data = gpd.read_file(&quot;data/texas.shp&quot;)
+W = Queen(&quot;data/texas.shp&quot;)
+W.transform = &apos;r&apos;???
 </code></pre>
 <h3 id="attribute-similarity">Attribute Similarity</h3>
 <p>So the spatial weight between counties $i$ and $j$ indicates if the two counties are neighbors (i.e., geographically similar). What we also need is a measure of attribute similarity to pair up with this concept of spatial similarity.
@@ -1146,7 +1146,7 @@ sns.kdeplot(data.HR60)
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"next":{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]},"previous":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/04_esda.md","mtime":"2021-03-17T14:22:35.331Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-17T14:31:54.649Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"next":{"title":"Space-time analysis","level":"1.7.5","depth":2,"path":"ipynb_md/05_spatial_dynamics.md","ref":"ipynb_md/05_spatial_dynamics.md","articles":[]},"previous":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"path":"ipynb_md/03_spatial_weights.md","ref":"ipynb_md/03_spatial_weights.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/04_esda.md","mtime":"2021-03-18T09:42:47.833Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T14:43:10.795Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -382,18 +382,20 @@
 <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
 <span class="hljs-keyword">import</span> libpysal <span class="hljs-keyword">as</span> lps
 <span class="hljs-keyword">from</span> libpysal.weights <span class="hljs-keyword">import</span> Queen, Rook, KNN, Kernel, DistanceBand,w_difference
+<span class="hljs-keyword">from</span> libpysal.weights <span class="hljs-keyword">import</span> min_threshold_dist_from_shapefile
 <span class="hljs-keyword">from</span> splot.libpysal <span class="hljs-keyword">import</span> plot_spatial_weights
 </code></pre>
 <p>There are functions to construct weights directly from a file path. </p>
-<pre><code class="lang-python">shp_path = <span class="hljs-string">&quot;../data/texas.shp&quot;</span>
+<pre><code class="lang-python">shp_path = <span class="hljs-string">&quot;data/texas.shp&quot;</span>
 </code></pre>
 <h2 id="weight-types">Weight Types</h2>
 <h3 id="contiguity">Contiguity:</h3>
 <h4 id="queen-weights">Queen Weights</h4>
 <p>A commonly-used type of weight is a queen contigutiy weight, which reflects adjacency relationships as a binary indicator variable denoting whether or not a polygon shares an edge or a vertex with another polygon. These weights are symmetric, in that when polygon $A$ neighbors polygon $B$, both $w<em>{AB} = 1$ and $w</em>{BA} = 1$.</p>
 <p>To construct queen weights from a shapefile, use the <code>queen_from_shapefile</code> function:</p>
-<pre><code class="lang-python">df = gpd.read_file(shp_path)
-qW = Queen.from_dataframe(df)
+<pre><code class="lang-python">shp_path = <span class="hljs-string">&quot;data/texas.shp&quot;</span>
+gpd_df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(gpd_df)
 </code></pre>
 <pre><code class="lang-python">qW
 </code></pre>
@@ -410,7 +412,7 @@ print(self_and_neighbors)
 </code></pre>
 <pre><code>[4, 0, 3, 5, 6, 7]
 </code></pre><p>and grabbing those elements from the dataframe:</p>
-<pre><code class="lang-python">df.loc[self_and_neighbors]
+<pre><code class="lang-python">gpd_df.loc[self_and_neighbors]
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -594,7 +596,6 @@ print(self_and_neighbors)
 
 <p>A full, dense matrix describing all of the pairwise relationships is constructed using the <code>.full</code> method, or when <code>pysal.full</code> is called on a weights object:</p>
 <pre><code class="lang-python">Wmatrix, ids = qW.full()
-<span class="hljs-comment">#Wmatrix, ids = ps.full(qW)</span>
 </code></pre>
 <pre><code class="lang-python">Wmatrix
 </code></pre>
@@ -652,7 +653,7 @@ print(self_and_neighbors)
 <pre><code>2.263004526009052
 </code></pre><p>By default, PySAL assigns each observation an index according to the order in which the observation was read in. This means that, by default, all of the observations in the weights object are indexed by table order. If you have an alternative ID variable, you can pass that into the weights constructor. </p>
 <p>For example, the <code>texas.shp</code> dataset has a possible alternative ID Variable, a <code>FIPS</code> code.</p>
-<pre><code class="lang-python">df.head()
+<pre><code class="lang-python">gpd_df.head()
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -812,8 +813,8 @@ print(self_and_neighbors)
 
 <p>The observation we were discussing above is in the fifth row: Ochiltree county, Texas. Note that its FIPS code is 48357.</p>
 <p>Then, instead of indexing the weights and the dataframe just based on read-order, use the <code>FIPS</code> code as an index:</p>
-<pre><code class="lang-python">df = gpd.read_file(shp_path)
-qW = Queen.from_dataframe(df,idVariable,idVariable=<span class="hljs-string">&apos;FIPS&apos;</span>)
+<pre><code class="lang-python">gpd_df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(gpd_df,idVariable=<span class="hljs-string">&apos;FIPS&apos;</span>)
 </code></pre>
 <pre><code class="lang-python">qW[<span class="hljs-number">4</span>] <span class="hljs-comment">#fails, since no FIPS is 4.</span>
 </code></pre>
@@ -846,7 +847,7 @@ KeyError: 4
 self_and_neighbors.extend(qW.neighbors[<span class="hljs-string">&apos;48357&apos;</span>])
 </code></pre>
 <p>Then, we can use this list in <code>.query</code>: </p>
-<pre><code class="lang-python">df.query(<span class="hljs-string">&apos;FIPS in @self_and_neighbors&apos;</span>)
+<pre><code class="lang-python">gpd_df.query(<span class="hljs-string">&apos;FIPS in @self_and_neighbors&apos;</span>)
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -1032,7 +1033,7 @@ self_and_neighbors.extend(qW.neighbors[<span class="hljs-string">&apos;48357&apo
 <pre><code class="lang-python"><span class="hljs-comment">#df.query(&apos;FIPS in self_and_neighbors&apos;) will fail because there is no column called &apos;self_and_neighbors&apos;</span>
 </code></pre>
 <p>Of course, we could also reindex the dataframe to use the same index as our weights:</p>
-<pre><code class="lang-python">fips_frame = df.set_index(df.FIPS)
+<pre><code class="lang-python">fips_frame = gpd_df.set_index(gpd_df.FIPS)
 fips_frame.head()
 </code></pre>
 <div>
@@ -1425,7 +1426,7 @@ fips_frame.head()
 <h4 id="rook-weights">Rook Weights</h4>
 <p>Rook weights are another type of contiguity weight, but consider observations as neighboring only when they share an edge. The rook neighbors of an observation may be different than its queen neighbors, depending on how the observation and its nearby polygons are configured. </p>
 <p>We can construct this in the same way as the queen weights, using the special <code>rook_from_shapefile</code> function:</p>
-<pre><code class="lang-python">rW = Rook.from_dataframe(df,idVariable=<span class="hljs-string">&apos;FIPS&apos;</span>)
+<pre><code class="lang-python">rW = Rook.from_dataframe(gpd_df,idVariable=<span class="hljs-string">&apos;FIPS&apos;</span>)
 </code></pre>
 <pre><code class="lang-python">rW[<span class="hljs-string">&apos;48357&apos;</span>]
 </code></pre>
@@ -1771,21 +1772,23 @@ df.query(<span class="hljs-string">&apos;FIPS not in @islands&apos;</span>).head
 radius
 </code></pre>
 <pre><code>3958.755865744055
-</code></pre><pre><code class="lang-python"><span class="hljs-comment">#ps.min_threshold_dist_from_shapefile?</span>
+</code></pre><pre><code class="lang-python"><span class="hljs-comment">#lps.weights.min_threshold_dist_from_shapefile?</span>
 </code></pre>
-<pre><code class="lang-python">threshold = ps.min_threshold_dist_from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>,radius) <span class="hljs-comment"># now in miles, maximum nearest neighbor distance between the n observations</span>
+<pre><code class="lang-python">
+radius = lps.cg.sphere.RADIUS_EARTH_MILES
+threshold = lps.weihgts.min_threshold_dist_from_shapefile(<span class="hljs-string">&apos;data/texas.shp&apos;</span>,radius) <span class="hljs-comment"># now in miles, maximum nearest neighbor distance between the n observations</span>
 </code></pre>
 <pre><code class="lang-python">threshold
 </code></pre>
 <pre><code>60.47758554135752
 </code></pre><h3 id="knn-defined-weights">knn defined weights</h3>
 <pre><code class="lang-python"><span class="hljs-keyword">from</span> libpysal.weights <span class="hljs-keyword">import</span> KNN
-knn4_bad = KNN.from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>, k=<span class="hljs-number">4</span>) <span class="hljs-comment"># ignore curvature of the earth</span>
+knn4_bad = KNN.from_shapefile(<span class="hljs-string">&apos;data/texas.shp&apos;</span>, k=<span class="hljs-number">4</span>) <span class="hljs-comment"># ignore curvature of the earth</span>
 </code></pre>
 <pre><code class="lang-python">knn4_bad.histogram
 </code></pre>
 <pre><code>[(4, 254)]
-</code></pre><pre><code class="lang-python">knn4 = KNN.from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>, k=<span class="hljs-number">4</span>, radius=radius)
+</code></pre><pre><code class="lang-python">knn4 = KNN.from_shapefile(<span class="hljs-string">&apos;data/texas.shp&apos;</span>, k=<span class="hljs-number">4</span>, radius=radius)
 </code></pre>
 <pre><code class="lang-python">knn4.histogram
 </code></pre>
@@ -1801,11 +1804,11 @@ knn4_bad = KNN.from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&
 Typically, they estimate a <code>bandwidth</code>, which is a parameter governing how far out observations should be considered neighboring. Then, using this bandwidth, they evaluate a continuous kernel function to provide a weight between 0 and 1.</p>
 <p>Many different choices of kernel functions are supported, and bandwidths can either be fixed (constant over all units) or adaptive in function of unit density.</p>
 <p>For example, if we want to use adaptive bandwidths for the map and weight according to a gaussian kernel:</p>
-<pre><code class="lang-python">kernelWa = Kernel.from_dataframe(df, k=<span class="hljs-number">10</span>, fixed=<span class="hljs-keyword">False</span>, function=<span class="hljs-string">&apos;gaussian&apos;</span>)
+<pre><code class="lang-python">kernelWa = Kernel.from_dataframe(gpd_df, k=<span class="hljs-number">10</span>, fixed=<span class="hljs-keyword">False</span>, function=<span class="hljs-string">&apos;gaussian&apos;</span>)
 kernelWa
 </code></pre>
 <pre><code>&lt;libpysal.weights.distance.DistanceBand at 0x7fea4e2183c8&gt;
-</code></pre><pre><code class="lang-python">df.loc[kernelWa.neighbors[<span class="hljs-number">4</span>] + [<span class="hljs-number">4</span>]]
+</code></pre><pre><code class="lang-python">gpd_df.loc[kernelWa.neighbors[<span class="hljs-number">4</span>] + [<span class="hljs-number">4</span>]]
 </code></pre>
 <div>
 <table border="1" class="dataframe">
@@ -1956,55 +1959,18 @@ kernelWa
 </code></pre>
 <pre><code>{1: 9.99999900663795e-08, 2: 1.0, 8: 0.23409571720488287}
 </code></pre><h2 id="distance-thresholds">Distance Thresholds</h2>
-<pre><code class="lang-python"><span class="hljs-comment">#ps.min_threshold_dist_from_shapefile?</span>
+<pre><code class="lang-python"><span class="hljs-comment">#lps.weights.min_threshold_dist_from_shapefile?</span>
 </code></pre>
 <pre><code class="lang-python"><span class="hljs-comment"># find the largest nearest neighbor distance between centroids</span>
-threshold = DistanceBand.from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>, threshold=radius) <span class="hljs-comment"># decimal degrees</span>
+threshold = DistanceBand.from_shapefile(<span class="hljs-string">&apos;data/texas.shp&apos;</span>, threshold=radius) <span class="hljs-comment"># decimal degrees</span>
 Wmind0 = threshold.binary
 </code></pre>
 <pre><code>WARNING: there are 2 disconnected observations
 Island ids:  [133, 181]
-</code></pre><pre><code class="lang-python">Wmind0.histogram
+</code></pre><pre><code class="lang-python">
+Wmind = lps.weights.min_threshold_dist_from_shapefile(<span class="hljs-string">&apos;data/texas.shp&apos;</span>, radius=radius)
 </code></pre>
-<pre><code>[(0, 2),
- (1, 3),
- (2, 5),
- (3, 4),
- (4, 10),
- (5, 26),
- (6, 16),
- (7, 31),
- (8, 70),
- (9, 32),
- (10, 29),
- (11, 12),
- (12, 5),
- (13, 2),
- (14, 5),
- (15, 2)]
-</code></pre><pre><code class="lang-python">Wmind = ps.threshold_binaryW_from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>, radius=radius, threshold=threshold)
-</code></pre>
-<pre><code class="lang-python">Wmind.histogram
-</code></pre>
-<pre><code>[(1, 2),
- (2, 3),
- (3, 4),
- (4, 8),
- (5, 5),
- (6, 20),
- (7, 26),
- (8, 9),
- (9, 32),
- (10, 31),
- (11, 37),
- (12, 33),
- (13, 23),
- (14, 6),
- (15, 7),
- (16, 2),
- (17, 4),
- (18, 2)]
-</code></pre><pre><code class="lang-python">centroids = np.array([poly <span class="hljs-keyword">for</span> poly <span class="hljs-keyword">in</span> df.geometry.centroid])
+<pre><code class="lang-python">centroids = np.vstack([gpd_df.centroid.x, gpd_df.centroid.y]).T
 </code></pre>
 <pre><code class="lang-python">centroids[<span class="hljs-number">0</span>:<span class="hljs-number">10</span>]
 </code></pre>
@@ -2018,80 +1984,67 @@ Island ids:  [133, 181]
        [-101.35420366,   35.8408377 ],
        [-102.59375964,   35.83958662],
        [-101.89248229,   35.84058246]])
-</code></pre><pre><code class="lang-python">Wmind[<span class="hljs-number">0</span>]
-</code></pre>
-<pre><code>{3: 1, 4: 1, 5: 1, 6: 1, 13: 1}
 </code></pre><pre><code class="lang-python">knn4[<span class="hljs-number">0</span>]
 </code></pre>
 <pre><code>{3: 1.0, 4: 1.0, 5: 1.0, 6: 1.0}
 </code></pre><h2 id="visualization">Visualization</h2>
 <pre><code class="lang-python">%matplotlib inline
+<span class="hljs-keyword">import</span> geopandas <span class="hljs-keyword">as</span> gpd
 <span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
-<span class="hljs-keyword">from</span> pylab <span class="hljs-keyword">import</span> figure, scatter
 </code></pre>
-<pre><code class="lang-python">shp_path = <span class="hljs-string">&apos;../data/texas.shp&apos;</span>
+<pre><code class="lang-python">shp_path = <span class="hljs-string">&apos;data/texas.shp&apos;</span>
 gpd_shp = gpd.read_file(shp_path)
-wq = Queen.from_dataframe(gpd_shp)
+gpd_df =  gpd_shp.to_crs(<span class="hljs-number">3857</span>)   
+wq = Queen.from_dataframe(gpd_df)
+centroids = np.vstack([gpd_df.centroid.x, gpd_df.centroid.y]).T
 </code></pre>
 <pre><code class="lang-python">wq[<span class="hljs-number">0</span>]
 </code></pre>
 <pre><code>{4: 1.0, 5: 1.0, 6: 1.0}
-</code></pre><pre><code class="lang-python">fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
-plt.plot(centroids[:,<span class="hljs-number">0</span>], centroids[:,<span class="hljs-number">1</span>],<span class="hljs-string">&apos;.&apos;</span>)
-plt.ylim([<span class="hljs-number">25</span>,<span class="hljs-number">37</span>])
+</code></pre><pre><code class="lang-python">fig, ax = plt.subplots(<span class="hljs-number">1</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">8</span>))
+centroids =pd.DataFrame(np.vstack([gpd_df.NAME, gpd_df.centroid.x, gpd_df.centroid.y]).T, columns=[<span class="hljs-string">&apos;name&apos;</span>, <span class="hljs-string">&apos;x&apos;</span>, <span class="hljs-string">&apos;y&apos;</span>])
+centroids.plot(x=<span class="hljs-string">&apos;x&apos;</span>,y=<span class="hljs-string">&apos;y&apos;</span>,kind=<span class="hljs-string">&apos;scatter&apos;</span>,ax=ax,color=<span class="hljs-string">&apos;b&apos;</span>)
+ax.set_axis_off()
 plt.show()
 </code></pre>
 <p><img src="03_spatial_weights_files/03_spatial_weights_95_0.png" alt="png"></p>
 <pre><code class="lang-python">wq.neighbors[<span class="hljs-number">0</span>]
 </code></pre>
 <pre><code>[4, 5, 6]
-</code></pre><pre><code class="lang-python"><span class="hljs-keyword">from</span> pylab <span class="hljs-keyword">import</span> figure, scatter, show
-fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
-
-plt.plot(centroids[:,<span class="hljs-number">0</span>], centroids[:,<span class="hljs-number">1</span>],<span class="hljs-string">&apos;.&apos;</span>)
-<span class="hljs-comment">#plt.plot(s04[:,0], s04[:,1], &apos;-&apos;)</span>
-plt.ylim([<span class="hljs-number">25</span>,<span class="hljs-number">37</span>])
-<span class="hljs-keyword">for</span> k,neighs <span class="hljs-keyword">in</span> wq.neighbors.items():
-    <span class="hljs-comment">#print(k,neighs)</span>
-    origin = centroids[k]
-    <span class="hljs-keyword">for</span> neigh <span class="hljs-keyword">in</span> neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,<span class="hljs-number">0</span>], segment[:,<span class="hljs-number">1</span>], <span class="hljs-string">&apos;-&apos;</span>)
+</code></pre><pre><code class="lang-python">
+ax = gpd_df.plot(edgecolor=<span class="hljs-string">&apos;grey&apos;</span>, facecolor=<span class="hljs-string">&apos;w&apos;</span>)
+fig,ax = wq.plot(gpd_df, ax=ax,
+edge_kws=dict(color=<span class="hljs-string">&apos;r&apos;</span>, linestyle=<span class="hljs-string">&apos;:&apos;</span>, linewidth=<span class="hljs-number">1</span>),
+node_kws=dict(marker=<span class="hljs-string">&apos;&apos;</span>))
+ax.set_axis_off()
 plt.title(<span class="hljs-string">&apos;Queen Neighbor Graph&apos;</span>)
-show()
+plt.show()
 </code></pre>
 <p><img src="03_spatial_weights_files/03_spatial_weights_97_0.png" alt="png"></p>
-<pre><code class="lang-python">wr = ps.rook_from_shapefile(<span class="hljs-string">&apos;../data/texas.shp&apos;</span>)
+<pre><code class="lang-python">wr = Rook.from_dataframe(gpd_df)
 </code></pre>
-<pre><code class="lang-python">fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
-
-plt.plot(centroids[:,<span class="hljs-number">0</span>], centroids[:,<span class="hljs-number">1</span>],<span class="hljs-string">&apos;.&apos;</span>)
-<span class="hljs-comment">#plt.plot(s04[:,0], s04[:,1], &apos;-&apos;)</span>
-plt.ylim([<span class="hljs-number">25</span>,<span class="hljs-number">37</span>])
-<span class="hljs-keyword">for</span> k,neighs <span class="hljs-keyword">in</span> wr.neighbors.items():
-    <span class="hljs-comment">#print(k,neighs)</span>
-    origin = centroids[k]
-    <span class="hljs-keyword">for</span> neigh <span class="hljs-keyword">in</span> neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,<span class="hljs-number">0</span>], segment[:,<span class="hljs-number">1</span>], <span class="hljs-string">&apos;-&apos;</span>)
+<pre><code class="lang-python">ax = gpd_df.plot(edgecolor=<span class="hljs-string">&apos;grey&apos;</span>, facecolor=<span class="hljs-string">&apos;w&apos;</span>)
+fig,ax = wr.plot(gpd_df, ax=ax,
+edge_kws=dict(color=<span class="hljs-string">&apos;b&apos;</span>, linestyle=<span class="hljs-string">&apos;:&apos;</span>, linewidth=<span class="hljs-number">1</span>),
+node_kws=dict(marker=<span class="hljs-string">&apos;&apos;</span>))
+ax.set_axis_off()
 plt.title(<span class="hljs-string">&apos;Rook Neighbor Graph&apos;</span>)
-show()
+plt.show()
 </code></pre>
 <p><img src="03_spatial_weights_files/03_spatial_weights_99_0.png" alt="png"></p>
-<pre><code class="lang-python">fig = figure(figsize=(<span class="hljs-number">9</span>,<span class="hljs-number">9</span>))
-plt.plot(centroids[:,<span class="hljs-number">0</span>], centroids[:,<span class="hljs-number">1</span>],<span class="hljs-string">&apos;.&apos;</span>)
-<span class="hljs-comment">#plt.plot(s04[:,0], s04[:,1], &apos;-&apos;)</span>
-plt.ylim([<span class="hljs-number">25</span>,<span class="hljs-number">37</span>])
-<span class="hljs-keyword">for</span> k,neighs <span class="hljs-keyword">in</span> Wmind.neighbors.items():
-    origin = centroids[k]
-    <span class="hljs-keyword">for</span> neigh <span class="hljs-keyword">in</span> neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,<span class="hljs-number">0</span>], segment[:,<span class="hljs-number">1</span>], <span class="hljs-string">&apos;-&apos;</span>)
-plt.title(<span class="hljs-string">&apos;Minimum Distance Threshold Neighbor Graph&apos;</span>)
-show()
+<pre><code class="lang-python">wf = lps.weights.fuzzy_contiguity(gpd_df)
+</code></pre>
+<pre><code class="lang-python">
+ax = gpd_df.plot(edgecolor=<span class="hljs-string">&apos;grey&apos;</span>, facecolor=<span class="hljs-string">&apos;w&apos;</span>)
+fig,ax = wf.plot(gpd_df, ax=ax,
+edge_kws=dict(color=<span class="hljs-string">&apos;g&apos;</span>, linestyle=<span class="hljs-string">&apos;:&apos;</span>, linewidth=<span class="hljs-number">1</span>),
+node_kws=dict(marker=<span class="hljs-string">&apos;&apos;</span>))
+plt.title(<span class="hljs-string">&apos;Rio Grande do Sul: Nonplanar Weights&apos;</span>)
+ax.set_axis_off()
+plt.show()
 </code></pre>
 <p><img src="03_spatial_weights_files/03_spatial_weights_100_0.png" alt="png"></p>
-<pre><code class="lang-python">Wmind.pct_nonzero
+<pre><code class="lang-python">wf.pct_nonzero
 </code></pre>
 <pre><code>3.8378076756153514
 </code></pre><pre><code class="lang-python">wr.pct_nonzero
@@ -2149,7 +2102,7 @@ show()
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"next":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},"previous":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/03_spatial_weights.md","mtime":"2021-03-17T14:22:35.330Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-17T14:31:54.649Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Spatial weights in PySAL","level":"1.7.3","depth":2,"next":{"title":"ESDA with PySAL","level":"1.7.4","depth":2,"path":"ipynb_md/04_esda.md","ref":"ipynb_md/04_esda.md","articles":[]},"previous":{"title":"Geovisualization","level":"1.7.2","depth":2,"path":"ipynb_md/02_geovisualization.md","ref":"ipynb_md/02_geovisualization.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex-dev"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"katex-dev":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Serif","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Geographic Data Science with PySAL and the pydata stack","gitbook":">=3.0.0","description":"Booklet with material for geospatial"},"file":{"path":"ipynb_md/03_spatial_weights.md","mtime":"2021-03-18T14:23:33.077Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-03-18T14:43:10.795Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
