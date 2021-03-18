@@ -9,7 +9,8 @@
 import pysal as ps
 import pandas as pd
 import numpy as np
-from pysal.contrib.viz import mapping as maps
+import mapclassify as mc
+import geopandas as gpd
 ```
 
 A well-used functionality in PySAL is the use of PySAL to conduct exploratory spatial data analysis. This notebook will provide an overview of ways to conduct exploratory spatial analysis in Python. 
@@ -18,7 +19,7 @@ First, let's read in some data:
 
 
 ```python
-data = ps.pdio.read_files("../data/texas.shp")
+data = gpd.read_file("data/texas.shp")
 ```
 
 
@@ -188,11 +189,10 @@ data.head()
 
 ```python
 import matplotlib.pyplot as plt
-
 import geopandas as gpd
-shp_link = "../data/texas.shp"
+shp_link = "data/texas.shp"
 tx = gpd.read_file(shp_link)
-hr10 = ps.Quantiles(data.HR90, k=10)
+hr10 = mc.Quantiles(data.HR90, k=10)
 f, ax = plt.subplots(1, figsize=(9, 9))
 tx.assign(cl=hr10.yb).plot(column='cl', categorical=True, \
         k=10, cmap='OrRd', linewidth=0.1, ax=ax, \
@@ -223,9 +223,9 @@ We have already encountered spatial weights in a previous notebook. In spatial a
 
 ```python
 
-data = ps.pdio.read_files("../data/texas.shp")
-W = ps.queen_from_shapefile("../data/texas.shp")
-W.transform = 'r'
+data = gpd.read_file("data/texas.shp")
+W = Queen("data/texas.shp")
+W.transform = 'r'???
 ```
 
 ### Attribute Similarity

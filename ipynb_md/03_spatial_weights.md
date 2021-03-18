@@ -16,6 +16,7 @@ import pysal as ps
 import numpy as np
 import libpysal as lps
 from libpysal.weights import Queen, Rook, KNN, Kernel, DistanceBand,w_difference
+from libpysal.weights import min_threshold_dist_from_shapefile
 from splot.libpysal import plot_spatial_weights
 ```
 
@@ -23,7 +24,7 @@ There are functions to construct weights directly from a file path.
 
 
 ```python
-shp_path = "../data/texas.shp"
+shp_path = "data/texas.shp"
 ```
 
 ## Weight Types
@@ -37,8 +38,9 @@ To construct queen weights from a shapefile, use the `queen_from_shapefile` func
 
 
 ```python
-df = gpd.read_file(shp_path)
-qW = Queen.from_dataframe(df)
+shp_path = "data/texas.shp"
+gpd_df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(gpd_df)
 ```
 
 
@@ -85,7 +87,7 @@ and grabbing those elements from the dataframe:
 
 
 ```python
-df.loc[self_and_neighbors]
+gpd_df.loc[self_and_neighbors]
 ```
 
 
@@ -276,7 +278,6 @@ A full, dense matrix describing all of the pairwise relationships is constructed
 
 ```python
 Wmatrix, ids = qW.full()
-#Wmatrix, ids = ps.full(qW)
 ```
 
 
@@ -406,7 +407,7 @@ For example, the `texas.shp` dataset has a possible alternative ID Variable, a `
 
 
 ```python
-df.head()
+gpd_df.head()
 ```
 
 
@@ -574,8 +575,8 @@ Then, instead of indexing the weights and the dataframe just based on read-order
 
 
 ```python
-df = gpd.read_file(shp_path)
-qW = Queen.from_dataframe(df,idVariable,idVariable='FIPS')
+gpd_df = gpd.read_file(shp_path)
+qW = Queen.from_dataframe(gpd_df,idVariable='FIPS')
 ```
 
 
@@ -635,7 +636,7 @@ Then, we can use this list in `.query`:
 
 
 ```python
-df.query('FIPS in @self_and_neighbors')
+gpd_df.query('FIPS in @self_and_neighbors')
 ```
 
 
@@ -832,7 +833,7 @@ Of course, we could also reindex the dataframe to use the same index as our weig
 
 
 ```python
-fips_frame = df.set_index(df.FIPS)
+fips_frame = gpd_df.set_index(gpd_df.FIPS)
 fips_frame.head()
 ```
 
@@ -1241,7 +1242,7 @@ We can construct this in the same way as the queen weights, using the special `r
 
 
 ```python
-rW = Rook.from_dataframe(df,idVariable='FIPS')
+rW = Rook.from_dataframe(gpd_df,idVariable='FIPS')
 ```
 
 
@@ -1646,12 +1647,14 @@ radius
 
 
 ```python
-#ps.min_threshold_dist_from_shapefile?
+#lps.weights.min_threshold_dist_from_shapefile?
 ```
 
 
 ```python
-threshold = ps.min_threshold_dist_from_shapefile('../data/texas.shp',radius) # now in miles, maximum nearest neighbor distance between the n observations
+
+radius = lps.cg.sphere.RADIUS_EARTH_MILES
+threshold = lps.weihgts.min_threshold_dist_from_shapefile('data/texas.shp',radius) # now in miles, maximum nearest neighbor distance between the n observations
 ```
 
 
@@ -1671,7 +1674,7 @@ threshold
 
 ```python
 from libpysal.weights import KNN
-knn4_bad = KNN.from_shapefile('../data/texas.shp', k=4) # ignore curvature of the earth
+knn4_bad = KNN.from_shapefile('data/texas.shp', k=4) # ignore curvature of the earth
 ```
 
 
@@ -1688,7 +1691,7 @@ knn4_bad.histogram
 
 
 ```python
-knn4 = KNN.from_shapefile('../data/texas.shp', k=4, radius=radius)
+knn4 = KNN.from_shapefile('data/texas.shp', k=4, radius=radius)
 ```
 
 
@@ -1738,7 +1741,7 @@ For example, if we want to use adaptive bandwidths for the map and weight accord
 
 
 ```python
-kernelWa = Kernel.from_dataframe(df, k=10, fixed=False, function='gaussian')
+kernelWa = Kernel.from_dataframe(gpd_df, k=10, fixed=False, function='gaussian')
 kernelWa
 ```
 
@@ -1751,7 +1754,7 @@ kernelWa
 
 
 ```python
-df.loc[kernelWa.neighbors[4] + [4]]
+gpd_df.loc[kernelWa.neighbors[4] + [4]]
 ```
 
 
@@ -1935,13 +1938,13 @@ kernelWa[2]
 
 
 ```python
-#ps.min_threshold_dist_from_shapefile?
+#lps.weights.min_threshold_dist_from_shapefile?
 ```
 
 
 ```python
 # find the largest nearest neighbor distance between centroids
-threshold = DistanceBand.from_shapefile('../data/texas.shp', threshold=radius) # decimal degrees
+threshold = DistanceBand.from_shapefile('data/texas.shp', threshold=radius) # decimal degrees
 Wmind0 = threshold.binary
 ```
 
@@ -1950,69 +1953,16 @@ Wmind0 = threshold.binary
 
 
 
-```python
-Wmind0.histogram
-```
-
-
-
-
-    [(0, 2),
-     (1, 3),
-     (2, 5),
-     (3, 4),
-     (4, 10),
-     (5, 26),
-     (6, 16),
-     (7, 31),
-     (8, 70),
-     (9, 32),
-     (10, 29),
-     (11, 12),
-     (12, 5),
-     (13, 2),
-     (14, 5),
-     (15, 2)]
-
-
 
 
 ```python
-Wmind = ps.threshold_binaryW_from_shapefile('../data/texas.shp', radius=radius, threshold=threshold)
+
+Wmind = lps.weights.min_threshold_dist_from_shapefile('data/texas.shp', radius=radius)
 ```
 
 
 ```python
-Wmind.histogram
-```
-
-
-
-
-    [(1, 2),
-     (2, 3),
-     (3, 4),
-     (4, 8),
-     (5, 5),
-     (6, 20),
-     (7, 26),
-     (8, 9),
-     (9, 32),
-     (10, 31),
-     (11, 37),
-     (12, 33),
-     (13, 23),
-     (14, 6),
-     (15, 7),
-     (16, 2),
-     (17, 4),
-     (18, 2)]
-
-
-
-
-```python
-centroids = np.array([poly for poly in df.geometry.centroid])
+centroids = np.vstack([gpd_df.centroid.x, gpd_df.centroid.y]).T
 ```
 
 
@@ -2037,17 +1987,6 @@ centroids[0:10]
 
 
 
-```python
-Wmind[0]
-```
-
-
-
-
-    {3: 1, 4: 1, 5: 1, 6: 1, 13: 1}
-
-
-
 
 ```python
 knn4[0]
@@ -2065,15 +2004,17 @@ knn4[0]
 
 ```python
 %matplotlib inline
+import geopandas as gpd
 import matplotlib.pyplot as plt
-from pylab import figure, scatter
 ```
 
 
 ```python
-shp_path = '../data/texas.shp'
+shp_path = 'data/texas.shp'
 gpd_shp = gpd.read_file(shp_path)
-wq = Queen.from_dataframe(gpd_shp)
+gpd_df =  gpd_shp.to_crs(3857)   
+wq = Queen.from_dataframe(gpd_df)
+centroids = np.vstack([gpd_df.centroid.x, gpd_df.centroid.y]).T
 ```
 
 
@@ -2090,9 +2031,10 @@ wq[0]
 
 
 ```python
-fig = figure(figsize=(9,9))
-plt.plot(centroids[:,0], centroids[:,1],'.')
-plt.ylim([25,37])
+fig, ax = plt.subplots(1, figsize=(12, 8))
+centroids =pd.DataFrame(np.vstack([gpd_df.NAME, gpd_df.centroid.x, gpd_df.centroid.y]).T, columns=['name', 'x', 'y'])
+centroids.plot(x='x',y='y',kind='scatter',ax=ax,color='b')
+ax.set_axis_off()
 plt.show()
 ```
 
@@ -2114,20 +2056,15 @@ wq.neighbors[0]
 
 
 ```python
-from pylab import figure, scatter, show
-fig = figure(figsize=(9,9))
 
-plt.plot(centroids[:,0], centroids[:,1],'.')
-#plt.plot(s04[:,0], s04[:,1], '-')
-plt.ylim([25,37])
-for k,neighs in wq.neighbors.items():
-    #print(k,neighs)
-    origin = centroids[k]
-    for neigh in neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,0], segment[:,1], '-')
+ax = gpd_df.plot(edgecolor='grey', facecolor='w')
+fig,ax = wq.plot(gpd_df, ax=ax,
+edge_kws=dict(color='r', linestyle=':', linewidth=1),
+node_kws=dict(marker=''))
+ax.set_axis_off()
 plt.title('Queen Neighbor Graph')
-show()
+plt.show()
+
 ```
 
 
@@ -2136,24 +2073,18 @@ show()
 
 
 ```python
-wr = ps.rook_from_shapefile('../data/texas.shp')
+wr = Rook.from_dataframe(gpd_df)
 ```
 
 
 ```python
-fig = figure(figsize=(9,9))
-
-plt.plot(centroids[:,0], centroids[:,1],'.')
-#plt.plot(s04[:,0], s04[:,1], '-')
-plt.ylim([25,37])
-for k,neighs in wr.neighbors.items():
-    #print(k,neighs)
-    origin = centroids[k]
-    for neigh in neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,0], segment[:,1], '-')
+ax = gpd_df.plot(edgecolor='grey', facecolor='w')
+fig,ax = wr.plot(gpd_df, ax=ax,
+edge_kws=dict(color='b', linestyle=':', linewidth=1),
+node_kws=dict(marker=''))
+ax.set_axis_off()
 plt.title('Rook Neighbor Graph')
-show()
+plt.show()
 ```
 
 
@@ -2161,18 +2092,21 @@ show()
 
 
 
+
 ```python
-fig = figure(figsize=(9,9))
-plt.plot(centroids[:,0], centroids[:,1],'.')
-#plt.plot(s04[:,0], s04[:,1], '-')
-plt.ylim([25,37])
-for k,neighs in Wmind.neighbors.items():
-    origin = centroids[k]
-    for neigh in neighs:
-        segment = centroids[[k,neigh]]
-        plt.plot(segment[:,0], segment[:,1], '-')
-plt.title('Minimum Distance Threshold Neighbor Graph')
-show()
+wf = lps.weights.fuzzy_contiguity(gpd_df)
+```
+
+
+```python
+
+ax = gpd_df.plot(edgecolor='grey', facecolor='w')
+fig,ax = wf.plot(gpd_df, ax=ax,
+edge_kws=dict(color='g', linestyle=':', linewidth=1),
+node_kws=dict(marker=''))
+plt.title('Rio Grande do Sul: Nonplanar Weights')
+ax.set_axis_off()
+plt.show()
 ```
 
 
@@ -2181,7 +2115,7 @@ show()
 
 
 ```python
-Wmind.pct_nonzero
+wf.pct_nonzero
 ```
 
 
