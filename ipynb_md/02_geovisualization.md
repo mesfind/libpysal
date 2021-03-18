@@ -1,6 +1,5 @@
 # Choropleth Mapping 
 
-> [`IPYNB`](../content/part1/02_geovisualization.ipynb)
 
 ## Introduction
 

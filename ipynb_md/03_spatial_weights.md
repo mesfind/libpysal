@@ -1,7 +1,5 @@
 # Spatial Weights
 
-> [`IPYNB`](../content/part1/03_spatial_weights.ipynb)
-
 
 Spatial weights are mathematical structures used to represent spatial relationships. Many spatial analytics, such as spatial autocorrelation statistics and regionalization algorithms rely on spatial weights. Generally speaking, a spatial weight $w_{i,j}$ expresses the notion of a geographical relationship between locations $i$ and $j$. These relationships can be based on a number of criteria including contiguity, geospatial distance and general distances.
 

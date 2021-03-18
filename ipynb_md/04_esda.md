@@ -1,8 +1,5 @@
 # Exploratory Spatial Data Analysis (ESDA)
 
-> [`IPYNB`](../content/part1/04_esda.ipynb)
-
-
 
 ```python
 %matplotlib inline

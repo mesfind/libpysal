@@ -1,9 +1,5 @@
 #  Spatial Clustering
 
-> [`IPYNB`](../content/part2/07_spatial_clustering.ipynb)
-
-> **NOTE**: much of this material has been ported and adapted from "Lab 8" in [Arribas-Bel (2016)](http://darribas.org/gds15).
-
 This notebook covers a brief introduction to spatial regression. To demonstrate this, we will use a dataset of all the AirBnb listings in the city of Austin (check the Data section for more information about the dataset).
 
 Many questions and topics are complex phenomena that involve several dimensions and are hard to summarize into a single variable. In statistical terms, we call this family of problems *multivariate*, as oposed to *univariate* cases where only a single variable is considered in the analysis. Clustering tackles this kind of questions by reducing their dimensionality -the number of relevant variables the analyst needs to look at- and converting it into a more intuitive set of classes that even non-technical audiences can look at and make sense of. For this reason, it is widely use in applied contexts such as policymaking or marketing. In addition, since these methods do not require many preliminar assumptions about the structure of the data, it is a commonly used exploratory tool, as it can quickly give clues about the shape, form and content of a dataset.
@@ -25,6 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pysal as ps
+import lipysal as lps
 import geopandas as gpd
 from sklearn import cluster
 from sklearn.preprocessing import scale
@@ -37,8 +34,8 @@ Let us also set the paths to all the files we will need throughout the tutorial:
 
 ```python
 # Adjust this to point to the right file in your computer
-abb_link = '../data/listings.csv.gz'
-zc_link = '../data/Zipcodes.geojson'
+abb_link = 'data/listings.csv.gz'
+zc_link = 'data/Zipcodes.geojson'
 ```
 
 Before anything, let us load the main dataset:

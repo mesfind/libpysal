@@ -1,9 +1,5 @@
 # Point Patterns
 
-> [`IPYNB`](../content/part2/06_points.ipynb)
-
-> **NOTE**: some of this material has been ported and adapted from "Lab 9" in [Arribas-Bel (2016)](http://darribas.org/gds15/labs/Lab_09.html).
-
 This notebook covers a brief introduction on how to visualize and analyze point patterns. To demonstrate this, we will use a dataset of all the AirBnb listings in the city of Austin (check the Data section for more information about the dataset).
 
 Before anything, let us load up the libraries we will use:
@@ -27,7 +23,7 @@ Let us first set the paths to the datasets we will be using:
 
 ```python
 # Adjust this to point to the right file in your computer
-listings_link = '../data/listings.csv.gz'
+listings_link = 'data/listings.csv.gz'
 ```
 
 The core dataset we will use is `listings.csv`, which contains a lot of information about each individual location listed at AirBnb within Austin:

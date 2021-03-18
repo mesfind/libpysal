@@ -1,8 +1,5 @@
 # Spatial Regression
 
-> [`IPYNB`](../content/part2/08_spatial_regression.ipynb)
-
-> **NOTE**: some of this material has been ported and adapted from the Spatial Econometrics note in [Arribas-Bel (2016b)](http://darribas.org/spa_notes).
 
 This notebook covers a brief and gentle introduction to spatial econometrics in Python. To do that, we will use a set of Austin properties listed in AirBnb.
 
@@ -23,6 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pysal as ps
+import libpysal as lps
 import geopandas as gpd
 
 sns.set(style="whitegrid")
@@ -33,7 +31,7 @@ Let us also set the paths to all the files we will need throughout the tutorial,
 
 ```python
 # Adjust this to point to the right file in your computer
-abb_link = '../data/listings.csv.gz'
+abb_link = 'data/listings.csv.gz'
 ```
 
 And go ahead and load it up too:
