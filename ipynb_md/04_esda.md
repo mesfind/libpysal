@@ -223,9 +223,9 @@ We have already encountered spatial weights in a previous notebook. In spatial a
 
 ```python
 
-data = gpd.read_file("data/texas.shp")
-W = Queen("data/texas.shp")
-W.transform = 'r'???
+gpd_shp = gpd.read_file("data/texas.shp")
+qW = Queen.from_dataframe(gpd_shp)
+qW.transform = 'r'
 ```
 
 ### Attribute Similarity
@@ -238,17 +238,17 @@ $$HR90Lag_i = \sum_j w_{i,j} HR90_j$$
 
 
 ```python
-HR90Lag = ps.lag_spatial(W, data.HR90)
+HR90Lag = lps.weights.lag_spatial(qW, gpd_shp.HR90)
 ```
 
 
 ```python
-HR90LagQ10 = ps.Quantiles(HR90Lag, k=10)
+HR90LagQ10 = mc.Quantiles(HR90Lag, k=10)
 ```
 
 
 ```python
-f, ax = plt.subplots(1, figsize=(9, 9))
+fig, ax = plt.subplots(1, figsize=(9, 9))
 tx.assign(cl=HR90LagQ10.yb).plot(column='cl', categorical=True, \
         k=10, cmap='OrRd', linewidth=0.1, ax=ax, \
         edgecolor='white', legend=True)
@@ -268,13 +268,13 @@ To complement the geovisualization of these associations we can turn to formal s
 
 
 ```python
-HR90 = data.HR90
+HR90 = gpd_shp.HR90
 b,a = np.polyfit(HR90, HR90Lag, 1)
 ```
 
 
 ```python
-f, ax = plt.subplots(1, figsize=(9, 9))
+fig, ax = plt.subplots(1, figsize=(9, 9))
 
 plt.plot(HR90, HR90Lag, '.', color='firebrick')
 
@@ -301,7 +301,8 @@ In PySAL, commonly-used analysis methods are very easy to access. For example, i
 
 
 ```python
-I_HR90 = ps.Moran(data.HR90.values, W)
+from esda.moran import Moran
+I_HR90 = Moran(gpd_shp.HR90.values, qW)
 ```
 
 
@@ -361,14 +362,11 @@ plt.vlines(I_HR90.I, 0, 10, 'r')
 plt.xlim([-0.15, 0.15])
 ```
 
-    /home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
-
-
-
-
+    <IPython.core.display.Javascript object>
+    Out[333]: 
 
     (-0.15, 0.15)
+
 
 
 
@@ -386,14 +384,11 @@ plt.vlines(I_HR90.EI+.01, 0, 10, 'r')
 plt.xlim([-0.15, 0.15])
 ```
 
-    /home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+    <IPython.core.display.Javascript object>
+     Out[335]: 
 
+     (-0.15, 0.15)
 
-
-
-
-    (-0.15, 0.15)
 
 
 
@@ -411,7 +406,8 @@ In addition to the Global autocorrelation statistics, PySAL has many local autoc
 
 
 ```python
-LMo_HR90 = ps.Moran_Local(data.HR90.values, W)
+from esda.moran import Moran_Local
+LMo_HR90 = Moran_Local(gpd_shp.HR90.values, qW)
 ```
 
 Now, instead of a single $I$ statistic, we have an *array* of local $I_i$ statistics, stored in the `.Is` attribute, and p-values from the simulation are in `p_sim`. 
@@ -435,7 +431,7 @@ We can adjust the number of permutations used to derive every *pseudo*-$p$ value
 
 
 ```python
-LMo_HR90 = ps.Moran_Local(data.HR90.values, W, permutations=9999)
+LMo_HR90 = Moran_Local(gpd_shp.HR90.values, qW, permutations=9999)
 ```
 
 In addition to the typical clustermap, a helpful visualization for LISA statistics is a Moran scatterplot with statistically significant LISA values highlighted. 
@@ -446,8 +442,8 @@ First, construct the spatial lag of the covariate:
 
 
 ```python
-Lag_HR90 = ps.lag_spatial(W, data.HR90.values)
-HR90 = data.HR90.values
+Lag_HR90 = lps.weights.lag_spatial(qW, gpd_shp.HR90.values)
+HR90 = gpd_shp.HR90.values
 ```
 
 Then, we want to plot the statistically-significant LISA values in a different color than the others. To do this, first find all of the statistically significant LISAs. Since the $p$-values are in the same order as the $I_i$ statistics, we can do this in the following way
@@ -484,14 +480,8 @@ plt.text(s='$I = %.3f$' % I_HR90.I, x=50, y=15, fontsize=18)
 plt.title('Moran Scatterplot')
 plt.ylabel('Spatial Lag of HR90')
 plt.xlabel('HR90')
+plt.show()
 ```
-
-
-
-
-    <matplotlib.text.Text at 0x7fd6cf324d30>
-
-
 
 
 ![png](04_esda_files/04_esda_44_1.png)
@@ -512,7 +502,7 @@ sig.sum()
 
 
 
-    44
+    42
 
 
 
@@ -529,7 +519,7 @@ hotspots.sum()
 
 
 
-    10
+    9
 
 
 
@@ -546,13 +536,13 @@ coldspots.sum()
 
 
 
-    17
+    16
 
 
 
 
 ```python
-data.HR90[hotspots]
+gpd_shp.HR90[hotspots]
 ```
 
 
@@ -574,7 +564,7 @@ data.HR90[hotspots]
 
 
 ```python
-data[hotspots]
+gpd_shp[hotspots]
 ```
 
 
@@ -874,7 +864,7 @@ plt.show()
 
 
 ```python
-data.HR90[coldspots]
+gpd_shp.HR90[coldspots]
 ```
 
 
@@ -939,14 +929,9 @@ plt.show()
 sns.kdeplot(data.HR90)
 ```
 
-    /home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+    Out[357]: <AxesSubplot:xlabel='HR90', ylabel='Density'>
 
 
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x7fd6ccc17358>
 
 
 
@@ -962,14 +947,15 @@ sns.kdeplot(data.HR70)
 sns.kdeplot(data.HR60)
 ```
 
-    /home/serge/anaconda2/envs/gds-scipy16/lib/python3.5/site-packages/statsmodels/nonparametric/kdetools.py:20: VisibleDeprecationWarning: using a non-integer number instead of an integer will result in an error in the future
-      y = X[:m/2+1] + np.r_[0,X[m/2+1:],0]*1j
+   <IPython.core.display.Javascript object>
+   <IPython.core.display.Javascript object>
+   <IPython.core.display.Javascript object>
+   <IPython.core.display.Javascript object>
+  
+
+  <AxesSubplot:xlabel='HR90', ylabel='Density'>
 
 
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x7fd6da838908>
 
 
 
@@ -979,7 +965,7 @@ sns.kdeplot(data.HR60)
 
 
 ```python
-data.HR90.mean()
+gpd_shp.HR90.mean()
 ```
 
 
@@ -991,7 +977,7 @@ data.HR90.mean()
 
 
 ```python
-data.HR90.median()
+gpd_shp.HR90.median()
 ```
 
 
