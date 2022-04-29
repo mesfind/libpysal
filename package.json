@@ -17,7 +17,7 @@
     "asciidoctor.js": "^1.5.3-preview.1",
     "asn1": "^0.1.11",
     "assert-plus": "^0.1.5",
-    "async": "^0.9.2",
+    "async": "^2.6.4",
     "async-each": "^0.1.6",
     "at-least-node": "^1.0.0",
     "aws-sign2": "^0.5.0",
