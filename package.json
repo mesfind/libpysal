@@ -127,7 +127,7 @@
     "hard-rejection": "^2.1.0",
     "has": "^1.0.3",
     "has-flag": "^4.0.0",
-    "hawk": "^1.1.1",
+    "hawk": "^9.0.1",
     "highlight.js": "^8.8.0",
     "hoek": "^0.9.1",
     "hosted-git-info": "^3.0.8",
