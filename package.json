@@ -193,7 +193,7 @@
     "mime-types": "^1.0.2",
     "mimer": "^1.1.0",
     "min-indent": "^1.0.1",
-    "minimatch": "^2.0.10",
+    "minimatch": "^3.0.5",
     "minimist": "^1.2.5",
     "minimist-options": "^4.1.0",
     "mkdirp": "^0.5.5",
